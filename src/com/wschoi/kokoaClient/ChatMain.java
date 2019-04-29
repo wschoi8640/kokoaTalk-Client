@@ -1,4 +1,4 @@
-package hufs.cws.network;
+package com.wschoi.kokoaClient;
 
 import javafx.application.Application;
 import javafx.scene.Scene;

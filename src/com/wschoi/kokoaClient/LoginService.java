@@ -1,4 +1,4 @@
-package hufs.cws.network;
+package com.wschoi.kokoaClient;
 
 import java.io.BufferedReader;
 import java.io.IOException;

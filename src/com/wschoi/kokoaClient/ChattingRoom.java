@@ -1,4 +1,4 @@
-package hufs.cws.network;
+package com.wschoi.kokoaClient;
 
 import java.net.*;
 import java.util.ArrayList;
