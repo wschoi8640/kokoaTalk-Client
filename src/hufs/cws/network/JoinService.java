@@ -32,8 +32,8 @@ import javafx.stage.Stage;
  * 이 클래스는 회원가입 화면을 구성한다.
  */
 public class JoinService extends VBox {
-	private LoginService echoLogin;
-	private Model echoModel;
+	private LoginService loginService;
+	private Model model;
 	public Stage parentStage;
 	private GridPane joinGrid;
 	private Label titleLabel;
@@ -53,10 +53,10 @@ public class JoinService extends VBox {
 	private ObjectOutputStream messageListSend;
 
 	// 최상위 스테이지와 연결된 소켓을 가져온 후 화면 구성
-	public JoinService(Model echoModel) {
-		this.echoModel = echoModel;
-		this.echoLogin = echoModel.getEchoLogin();
-		this.sock = echoModel.getSock();
+	public JoinService(Model model) {
+		this.model = model;
+		this.loginService = model.getLoginService();
+		this.sock = model.getSock();
 		initialize();
 	}
 
@@ -133,33 +133,33 @@ public class JoinService extends VBox {
 	void joinHandler(ActionEvent event) {
 		// 비어있는 필드가 없는지 확인
 		if (nameField.getText().trim().isEmpty()) {
-			echoLogin.alertHandler("Enter User Name!");
+			loginService.alertHandler("Enter User Name!");
 			return;
 		}
 		if (idField.getText().trim().isEmpty()) {
-			echoLogin.alertHandler("Enter User ID!");
+			loginService.alertHandler("Enter User ID!");
 			return;
 		}
 		if (pwField.getText().trim().isEmpty()) {
-			echoLogin.alertHandler("Enter User Password!");
+			loginService.alertHandler("Enter User Password!");
 			return;
 		}
 		if (pw2Field.getText().trim().isEmpty()) {
-			echoLogin.alertHandler("Enter User Password!");
+			loginService.alertHandler("Enter User Password!");
 			return;
 		}
 
 		// 비밀번호 반복 일치 여부를 확인
 		if (!pwField.getText().equals(pw2Field.getText())) {
-			echoLogin.alertHandler("Password Not Same!");
+			loginService.alertHandler("Password Not Same!");
 			return;
 		}
 
 		try {
 			// 입력된 값을 서버로 보냄
 			if (sock.isConnected()) {
-				messageListSend = echoModel.getMessageListSend();
-				messageRcv = echoModel.getMessageRcv();
+				messageListSend = model.getMessageListSend();
+				messageRcv = model.getMessageRcv();
 
 				userName = nameField.getText();
 				userID = idField.getText();
@@ -181,8 +181,8 @@ public class JoinService extends VBox {
 				// 회원 가입에 성공시
 				if (rcv_message.equals("join_ok")) {
 					// 로그인 화면으로 돌아감
-					echoModel.getEchoLogin().getChildren().clear();
-					echoModel.getEchoLogin().getChildren().addAll(echoModel.getTitleLabel(), echoModel.getLoginGrid());
+					model.getLoginService().getChildren().clear();
+					model.getLoginService().getChildren().addAll(model.getTitleLabel(), model.getLoginGrid());
 					return;
 				}
 
@@ -209,8 +209,8 @@ public class JoinService extends VBox {
 
 	// 로그인 화면으로 돌아갈 때 사용하는 메소드
 	void backHandler(ActionEvent event) {
-		echoModel.getEchoLogin().getChildren().clear();
-		echoModel.getEchoLogin().getChildren().addAll(echoModel.getTitleLabel(), echoModel.getLoginGrid());
+		model.getLoginService().getChildren().clear();
+		model.getLoginService().getChildren().addAll(model.getTitleLabel(), model.getLoginGrid());
 	}
 
 }

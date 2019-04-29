@@ -36,9 +36,9 @@ import javafx.stage.WindowEvent;
  */
 public class LoginService extends VBox {
 	public Stage parentStage;
-	private Model echoModel;
-	private ChatUserSevice echoShowUser;
-	private JoinService echoJoin;
+	private Model model;
+	private ChatUserSevice chatUserService;
+	private JoinService joinService;
 	private BufferedReader messageRcv;
 	private ObjectOutputStream messageListSender;
 	private ObjectInputStream messageListRcv;
@@ -57,8 +57,8 @@ public class LoginService extends VBox {
 	private int serverPort = 10001;
 
 	// 화면을 구성하고 서버에 연결
-	public LoginService(Model echoModel) {
-		this.echoModel = echoModel;
+	public LoginService(Model model) {
+		this.model = model;
 		initialize();
 		handleConnect();
 	}
@@ -103,8 +103,8 @@ public class LoginService extends VBox {
 		loginGrid.add(pwField, 1, 2);
 		loginGrid.add(joinBtn, 1, 3);
 		// 화면 전환을 위해 저장
-		echoModel.setLoginGrid(loginGrid);
-		echoModel.setTitleLabel(titleLabel);
+		model.setLoginGrid(loginGrid);
+		model.setTitleLabel(titleLabel);
 
 		this.setAlignment(Pos.CENTER);
 		this.setSpacing(100);
@@ -130,10 +130,10 @@ public class LoginService extends VBox {
 			messageSend = new PrintWriter(new OutputStreamWriter(out));
 			messageRcv = new BufferedReader(new InputStreamReader(in));
 
-			echoModel.setSock(sock);
-			echoModel.setMessageRcv(messageRcv);
-			echoModel.setMessageListSend(messageListSender);
-			echoModel.setMessageListRcv(messageListRcv);
+			model.setSock(sock);
+			model.setMessageRcv(messageRcv);
+			model.setMessageListSend(messageListSender);
+			model.setMessageListRcv(messageListRcv);
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -189,16 +189,16 @@ public class LoginService extends VBox {
 					alertHandler("Login Success!");
 
 					// 접속자의 데이터 저장
-					echoModel.setConnectedName(response_message.substring(6, response_message.length()));
-					echoModel.setConnectedID(userID);
+					model.setConnectedName(response_message.substring(6, response_message.length()));
+					model.setConnectedID(userID);
 
 					// 최상위 스테이지로 사용하기 위해 저장
-					echoModel.setEchoLogin(this);
+					model.setLoginService(this);
 					
 					// 친구 목록 보여주는 클래스 호출,추가
-					echoShowUser = new ChatUserSevice(echoModel);
+					chatUserService = new ChatUserSevice(model);
 					this.getChildren().clear();
-					this.getChildren().add(echoShowUser);
+					this.getChildren().add(chatUserService);
 					return;
 				}
 
@@ -261,11 +261,11 @@ public class LoginService extends VBox {
 	// join 버튼 누를시 실행되는 메소드
 	void joinHandler(ActionEvent event) {
 		// 최상위 스테이지로 사용하기 위해 저장
-		echoModel.setEchoLogin(this);
+		model.setLoginService(this);
 
 		// 회원가입 클래스 생성 및 추가
-		echoJoin = new JoinService(echoModel);
+		joinService = new JoinService(model);
 		this.getChildren().clear();
-		this.getChildren().add(echoJoin);
+		this.getChildren().add(joinService);
 	}
 }
