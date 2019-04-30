@@ -1,6 +1,10 @@
 package enums;
 
 public enum MsgKeys {
+	ChatroomAddSuccess("chatroom_added"),
+	ReceiveSuccess("rcv_ok"),
+	ReceiveChatrooms("rcv_chatrooms"),
+	ReceiveFriends("rcv_friends"),
 	JoinFail("join_fail"),
 	JoinSuccess("join_ok"),
 	JoinRequest("do_join"),

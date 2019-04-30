@@ -35,6 +35,9 @@ import utils.AlertHandler;
 
 /**
  * This class consists Join Panel
+ * 
+ * @author wschoi8640
+ * @version 1.0
  */
 public class JoinService extends VBox {
 	private LoginService loginService;
@@ -67,10 +70,10 @@ public class JoinService extends VBox {
 		this.model = model;
 		this.loginService = model.getLoginService();
 		this.sock = model.getSock();
-		makeJoinGrid();
+		initJoinGrid();
 	}
 
-	void makeJoinGrid() {
+	void initJoinGrid() {
 		// message List to send Server 
 		messageList = new ArrayList<String>();
 

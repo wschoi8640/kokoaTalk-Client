@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import enums.ErrMsgs;
+import enums.MsgKeys;
+import enums.Settings;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -37,10 +40,14 @@ import javafx.stage.WindowEvent;
 import model.Model;
 import utils.AlertHandler;
 
-/*
- * 이 클래스는 사용자의 채팅방 목록을 구성하고 추가,삭제할 수 있도록 한다.
+/**
+ * This class consists ChatRoomService Panel and offers ChatRoomManage service 
+ * 
+ * @author wschoi8640
+ * @version 1.0
  */
-public class ChatRoomService extends VBox {
+public class ChatRoomManager extends VBox {
+	
 	private Model model;
 	private Button showUsrBtn;
 	private Button showChatBtn;
@@ -71,67 +78,77 @@ public class ChatRoomService extends VBox {
 	private double btnHeight = 50;
 	private double btnWidth = 300;
 
-	public ChatRoomService(Model model) {
+	/**
+	 * receive Primary Stage and Socket Object
+	 * <br/> consist Panel
+	 * @param model
+	 */
+	public ChatRoomManager(Model model) {
 		this.model = model;
 		this.sock = model.getSock();
-		initialize();
+		initChatRoomManageGrid();
 	}
 
-	void initialize() {
+	void initChatRoomManageGrid() {
+		// message List to send Server 
 		messageList = new ArrayList<String>();
+		
+		// user's Friend List
 		friendsList = new ArrayList<String>();
+		
+		// user's Chatroom List
 		chatroomList = new ArrayList<ArrayList<String>>();
 		openedChatroomList = new ArrayList<Stage>();
 		chatroomButtons = new ArrayList<ToggleButton>();
 		selectedFriendList = new ArrayList<String>();
 
-		// 메뉴 역할을 하는 Grid
+		// Menu Grid
 		menuGrid = new GridPane();
 		menuGrid.setAlignment(Pos.TOP_CENTER);
 		menuGrid.setVgap(15);
 
-		// 채팅방 목록을 보여줄 Grid
+		// ChatRoom Grid
 		chatroomGrid = new GridPane();
 		chatroomGrid.setPrefSize(600, 550);
 		chatroomGrid.setHgap(15);
 		chatroomGrid.setVgap(15);
 
-		// 추가,삭제 기능이 표시될 Grid
+		// add / rmv Util Grid
 		funcGrid = new GridPane();
 		funcGrid.setVgap(15);
 
-		// 친구 목록 보기 버튼
+		// btn for Changing Grid(show Friends)
 		showUsrBtn = new Button("Show Friends");
 		showUsrBtn.setPrefWidth(btnWidth);
 		showUsrBtn.setPrefHeight(btnHeight);
 		showUsrBtn.setOnAction(e -> showUserHandler(e));
 
-		// 채팅방 보기 버튼
+		// btn for Changing Grid(show Chat rooms)
 		showChatBtn = new Button("Show Chat Rooms");
 		showChatBtn.setPrefWidth(btnWidth);
 		showChatBtn.setPrefHeight(btnHeight);
 
-		// 채팅방 열기 버튼
+		// btn for Open Chatroom
 		openChatBtn = new Button("Open Chatroom");
 		openChatBtn.setPrefSize(2 * btnWidth, btnHeight);
 		openChatBtn.setOnAction(e -> openChatHandler(e));
 
-		// 현재 사용자의 이름을 표시
+		// shows current User Name
 		userNameLabel = new Label(model.getConnectedName());
-		userNameLabel.setFont(new Font("Consolas", 30.0));
+		userNameLabel.setFont(new Font(Settings.Font.getSetting(), 30.0));
 		userNameLabel.setPrefHeight(btnHeight);
 
-		// 채팅방 추가 버튼
+		// btn for Add Chatroom
 		addChatroomBtn = new Button("Add Chatroom");
 		addChatroomBtn.setPrefSize(btnWidth, btnHeight);
 		addChatroomBtn.setOnAction(e -> addChatroomHandler(e));
 
-		// 채팅방 제거 버튼
+		// btn for Remove Chatroom
 		rmvChatroomBtn = new Button("Remove Chatroom");
 		rmvChatroomBtn.setPrefSize(btnWidth, btnHeight);
 		rmvChatroomBtn.setOnAction(e -> rmvChatroomHandler(e));
 
-		// 로그아웃 버튼
+		// btn for Logout
 		logoutBtn = new Button("Logout");
 		logoutBtn.setPrefSize(2 * btnWidth, btnHeight);
 		logoutBtn.setOnAction(e -> logoutHandler(e));
@@ -142,21 +159,21 @@ public class ChatRoomService extends VBox {
 		funcGrid.add(addChatroomBtn, 0, 0);
 		funcGrid.add(rmvChatroomBtn, 1, 0);
 
-		// 서버에서 채팅방 목록을 불러와 저장
+		// rcv ChatRoom List from Server 
 		chatroomButtons = rcvChatrooms();
 		if (chatroomButtons == null)
 			chatroomButtons = new ArrayList<ToggleButton>();
 
-		// 채팅방 목록을 Grid에 저장
+		// add Chatrooms to Chatroom Grid
 		addChatroomsToGrid(chatroomButtons);
 
-		// 채팅방 목록에 Grid 추가
+		// add Scroll to Grid
 		scrollPane = new ScrollPane(chatroomGrid);
 		scrollPane.setStyle("-fx-background-color:transparent;");
 		scrollPane.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
 		scrollPane.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
 
-		// 창크기가 변경될 때마다 버튼이나,Grid의 크기도 변경될 수 있도록 설정
+		// Set Auto Change by Panel size changes
 		model.getLoginService().widthProperty().addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> observableValue, Number oldSceneWidth,
@@ -194,51 +211,65 @@ public class ChatRoomService extends VBox {
 		logoutBtn.setPrefWidth(newSceneWidth.doubleValue());
 	}
 
-	/*
-	 * 채팅방 삭제 버튼을 누르면 실행되는 메소드
+	/**
+	 * Removes Selected Chatrooms from Grid
+	 * <br/>
+	 * <br/>1. Make List from selected Chatrooms. 
+	 * <br/>2. Send Server key and List. 
+	 * <br/>3. Remove Selected Chatrooms by Server response.
 	 * 
-	 * 1. 삭제를 위해 선택된 버튼들로 리스트를 구성한다. 2. 서버에 요청과 함께 삭제 리스트도 전송한다. 3. 서버에서 응답이 돌아오면
-	 * 클라이언트 상에서 삭제한다.
+	 * @param removeEvent
 	 */
 	void rmvChatroomHandler(ActionEvent e) {
+		// Remove when having any Chatroom
 		if (!chatroomButtons.isEmpty()) {
 			List<String> rmvChatroomsList = new ArrayList<String>();
+			// Add Selected Chatrooms to Remove List
 			for (ToggleButton chatroom : chatroomButtons) {
 				if (chatroom.isSelected())
 					rmvChatroomsList.add(chatroom.getText());
 			}
+			// Send Server when having any Selected Friends
 			if (!rmvChatroomsList.isEmpty()) {
 				try {
 					if (sock.isConnected()) {
 						messageListSend = model.getMessageListSend();
 						messageRcv = model.getMessageRcv();
 
+						// Add key and UserName and List to Msg List 
 						messageList.clear();
 						messageList.add(0, "rmv_chatroom");
 						messageList.add(1, model.getConnectedName());
-
 						for (String rmvChatroom : rmvChatroomsList) {
 							messageList.add(rmvChatroom);
 						}
 
+						// Send Server Msg
 						messageListSend.writeObject(messageList);
 						messageListSend.flush();
 						messageListSend.reset();
 						messageList.clear();
 
+						// Receive Server Response
 						String message;
 						if ((message = messageRcv.readLine()) != null) {
-							if (message.equals("yrmv_ok") || message.equals("rmv_ok")) {
+							// Remove Successful
+							if (message.equals(MsgKeys.RemoveSuccess.getKey()) || message.equals("yrmv_ok")) {
 								List<ToggleButton> tempList = new ArrayList<ToggleButton>();
 								tempList.addAll(chatroomButtons);
+								// Remove Selected Chatrooms from Chatroom List
 								for (ToggleButton myChatrooms : tempList) {
 									for (String rmvChatroom : rmvChatroomsList) {
 										if (myChatrooms.getText().equals(rmvChatroom))
 											chatroomButtons.remove(myChatrooms);
 									}
 								}
+								// Update Grid
 								chatroomGrid.getChildren().clear();
 								addChatroomsToGrid(chatroomButtons);
+								// Save Modification
+								model.setChatroomGrid(chatroomGrid);
+								model.setChatroomsList(chatroomButtons);
 							}
 						}
 					}
@@ -250,16 +281,19 @@ public class ChatRoomService extends VBox {
 		}
 	}
 
-	/*
-	 * 채팅방 열기 버튼을 누르면 실행되는 메소드
+	/**
+	 * Execute on OpenChat Btn Event
+	 * <br/>
+	 * <br/>1. Count selected chatrooms
+	 * <br/>2. Alert if num of chatroom > 1
+	 * <br/>2. Open new Window and Add ChattingRoom Grid
 	 * 
-	 * 1. 선택된 채팅방이 있는지 확인한다. 2. 선택된 채팅방을 생성하기 위한 클래스를 호출하고 이를 관리하기 위해 리스트에 추가한다.
-	 * 
+	 * @param openEvent
 	 */
 	void openChatHandler(ActionEvent e) {
 		int count = 0;
 
-		// 선택된 채팅방을 불러온다
+		// Count selected Chatroom
 		for (ToggleButton chatroom : chatroomButtons) {
 			if (chatroom.isSelected()) {
 				selectedChatroom = chatroom.getText();
@@ -267,25 +301,25 @@ public class ChatRoomService extends VBox {
 			}
 		}
 
-		// 채팅방이 제대로 선택되었는지 확인한다
+		// Check Count and Alert
 		if (count == 0) {
-			AlertHandler.alert("No Chatroom Chosen!");
+			AlertHandler.alert(ErrMsgs.NoChatRoomChosen.getMsg());
 		}
 		if (count > 1) {
-			AlertHandler.alert("Choose one Chatroom!");
+			AlertHandler.alert(ErrMsgs.ChooseOneChatRoom.getMsg());
 		}
 
-		// 이미 열려 있는 채팅방이라면 return하고 아닐시 채팅방을 띄운다.
+		// Open Chatroom if Valid
 		if (count == 1) {
-			// 열려있는 채팅방인지 확인한다.
+			// Check if Chatroom is Opened
 			for (Stage openedChatroom : openedChatroomList) {
 				if (openedChatroom.getTitle().equals(selectedChatroom)) {
-					AlertHandler.alert("Already Opened Chatroom!");
+					AlertHandler.alert(ErrMsgs.AlreadyOpenedChat.getMsg());
 					return;
 				}
 			}
 
-			// 채팅방을 띄우기 위해 클래스를 호출하고, 현재 사용자의 이름과 채팅방 이름을 전송한다.
+			// Create Chatting Room and Add to new Window 
 			ChattingRoom chattingRoom = new ChattingRoom(model.getConnectedName(), selectedChatroom, model);
 
 			Stage stage = new Stage();
@@ -294,22 +328,29 @@ public class ChatRoomService extends VBox {
 			stage.setScene(new Scene(chattingRoom, 600, 700));
 			stage.show();
 
-			// 열려있는 채팅방에 현재 채팅방을 추가한다.
+			// add opened ChattingRoom to List
 			openedChatroomList.add(stage);
 		}
 	}
 
-	// 채팅방을 닫을시 실행되는 메소드
+	/**
+	 * Executed When ChattingRoom is Closed
+	 * 
+	 * @param windowCloseEvent
+	 * @param primaryStage
+	 */
 	void closeHandler(WindowEvent e, Stage stage) {
 		openedChatroomList.remove(stage);
 		stage.close();
 	}
 
-	/*
-	 * 서버에서 채팅방 목록을 받아오는 메소드
+	/**
+	 * Receive user Chatrooms from Server
+	 * <br/>
+	 * <br/>1. Request Server User Chatroom List.
+	 * <br/>2. Change List into Buttons and return.
 	 * 
-	 * 1. 채팅방 목록을 서버에 요청한다. 2. 채팅방 목록이 서버로 부터 돌아오면 이를 버튼으로 만들어 반환한다.
-	 * 
+	 * @return List<Chatroom>
 	 */
 	private List<ToggleButton> rcvChatrooms() {
 		if (sock.isConnected()) {
@@ -318,21 +359,26 @@ public class ChatRoomService extends VBox {
 			messageListSend = model.getMessageListSend();
 			messageListRcv = model.getMessageListRcv();
 
-			messageList.add(0, "rcv_chatrooms");
+			// Add Key and UserName to Msg List
+			messageList.add(0, MsgKeys.ReceiveChatrooms.getKey());
 			messageList.add(1, model.getConnectedName());
 
 			try {
+				// Send Request to Server
 				messageListSend.writeObject(messageList);
 				messageListSend.flush();
 				messageListSend.reset();
 				messageList.clear();
+				// rcv Server response
 				messageList = (ArrayList<String>) messageListRcv.readObject();
 			} catch (IOException e) {
 				e.printStackTrace();
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 			}
-			if (messageList.get(0).equals("send_chatrooms")) {
+			
+			// make ChatRoomBtnList from response
+			if (messageList.get(0).equals(MsgKeys.ReceiveSuccess.getKey())) {
 				for (int i = 1; i < messageList.size(); i++) {
 					newChatroom = new ToggleButton(messageList.get(i));
 					newChatroom.setPrefSize(2 * btnWidth, btnHeight);
@@ -346,7 +392,11 @@ public class ChatRoomService extends VBox {
 
 	}
 
-	// Grid에 채팅방을 추가해주는 메소드
+	/**
+	 * Add ChatRooms to ChatRooms Grid
+
+	 * @param chatButtons
+	 */
 	void addChatroomsToGrid(List<ToggleButton> chats) {
 		chatroom_row = 0;
 		chatroom_column = 0;
@@ -363,15 +413,21 @@ public class ChatRoomService extends VBox {
 				}
 			}
 		}
+		// Save Modification
+		model.setChatroomGrid(chatroomGrid);
+		model.setChatroomsList(chatroomButtons);
 	}
 
-	/*
-	 * 채팅방 추가 버튼을 누르면 실행되는 메소드
+	/**
+	 * Execute On Add Chatroom Btn
+	 * <br/>
+	 * <br/>1. make Friend List from user Friend List
+	 * <br/>2. make Blank List to show Selected Friends  
+	 * <br/>3. make Selected List editable
+	 * <br/>4. Add submit button and send selected List to server onsubmit 
+	 * <br/>5. If successful add Chatroom, If fails show result
 	 * 
-	 * 1. 친구 추가 양식을 구성하기 위해 친구목록을 가져온다 2. 두개의 리스트를 만들어 친구들 목록을 보여주고 선택할 수 있게 한다. 3.
-	 * 다른 리스트에서는 현재 선택된 친구를 보여준다. 4. Submit 버튼과 Cancel 버튼을 만들고 Submit시 해당 친구들로 구성된
-	 * 채팅방을 만들도록 서버에 요청한다. 5. 성공적으로 추가될 시 채팅방을 추가하고, 실패시 해당 내용을 사용자에게 보여준다.
-	 *
+	 * @param addEvent
 	 */
 	void addChatroomHandler(ActionEvent e) {
 		openChatBtn.setVisible(false);
@@ -379,7 +435,7 @@ public class ChatRoomService extends VBox {
 		chatroomGrid.getChildren().clear();
 		chatroomGrid.getColumnConstraints().clear();
 
-		// 친구 목록을 가져와 추가한다.
+		// Add User Friends to FriendList
 		for (ToggleButton friend : model.getFriendsList()) {
 			friendsList.add(friend.getText());
 		}
@@ -387,7 +443,7 @@ public class ChatRoomService extends VBox {
 		chatroomGrid.setHgap(10);
 		chatroomGrid.setVgap(10);
 
-		// 두개의 리스트 뷰를 만들기 위해 Constraints를 추가한다
+		// Create UI
 		ColumnConstraints column1 = new ColumnConstraints(150, 150, Double.MAX_VALUE);
 		ColumnConstraints column2 = new ColumnConstraints(50);
 		ColumnConstraints column3 = new ColumnConstraints(150, 150, Double.MAX_VALUE);
@@ -396,30 +452,30 @@ public class ChatRoomService extends VBox {
 		column3.setHgrow(Priority.ALWAYS);
 		chatroomGrid.getColumnConstraints().addAll(column1, column2, column3);
 
-		// 현재 친구 목록 위에 표시될 Label
+		// Add Title to Friend List
 		Label candidatesLbl = new Label("Friends");
 		GridPane.setHalignment(candidatesLbl, HPos.CENTER);
 		chatroomGrid.add(candidatesLbl, 0, 0);
 
-		// 선택된 친구목록 위에 표시될 Label
+		// Add Title to Selected List
 		Label selectedLbl = new Label("Selected");
 		chatroomGrid.add(selectedLbl, 2, 0);
 		GridPane.setHalignment(selectedLbl, HPos.CENTER);
 
-		// 현재 친구의 리스트뷰를 생성한다
+		// Add Friend List to ListView 
 		final ObservableList<String> candidates = FXCollections.observableArrayList(friendsList);
 		final ListView<String> candidatesListView = new ListView<>(candidates);
 		chatroomGrid.add(candidatesListView, 0, 1);
 
-		// 선택된 친구의 리스트뷰를 생성한다.
+		// Add Selected List to ListView
 		final ObservableList<String> selected = FXCollections.observableArrayList();
 		final ListView<String> selectedListView = new ListView<>(selected);
 		chatroomGrid.add(selectedListView, 2, 1);
 
-		// 현재 친구에서 친구를 추가하는 버튼
+		// Add > button for selecting
 		Button sendRightButton = new Button(" > ");
 		sendRightButton.setOnAction((ActionEvent event) -> {
-			// 선택된 친구가 있을시 선택 친구 리스트 뷰에 친구를 추가한다.
+			// If any Selected Send to Selected List
 			String selectedFriend = candidatesListView.getSelectionModel().getSelectedItem();
 			if (selectedFriend != null) {
 				candidatesListView.getSelectionModel().clearSelection();
@@ -428,11 +484,11 @@ public class ChatRoomService extends VBox {
 			}
 		});
 
-		// 선택된 친구에서 친구를 삭제하는 버튼
+		// Add < button for removing
 		Button sendLeftButton = new Button(" < ");
 		sendLeftButton.setOnAction((ActionEvent event) -> {
 
-			// 선택된 친구가 있을시 선택 친구 리스트 뷰에서 친구를 삭제한다.
+			// If any Selected remove from Selected List
 			String unselectedFriend = selectedListView.getSelectionModel().getSelectedItem();
 			if (unselectedFriend != null) {
 				selectedListView.getSelectionModel().clearSelection();
@@ -444,29 +500,27 @@ public class ChatRoomService extends VBox {
 		VBox vbox = new VBox(5);
 		vbox.getChildren().addAll(sendRightButton, sendLeftButton);
 
-		// 선택된 친구로 구성된 채팅방을 추가하는 버튼
-		// 서버에 전송하고, 돌아오는 응답을 바탕으로 사용자에게 표시한다.
+		// make Chatroom from Selecte List
+		// Send List to Server and make Chatroom if response Valid
 		Button submitButton = new Button("Submit");
 		submitButton.setPrefSize(btnWidth, btnHeight);
 		submitButton.setOnAction((ActionEvent event) -> {
+			// Send to Server if any Selected
 			if (selected.size() > 0) {
 				String temp = "";
 				selectedFriendList.clear();
 				selectedFriendList = selected.stream().collect(Collectors.toList());
 				messageListSend = model.getMessageListSend();
 
-				// 채팅방 생성 요청과 현재 사용자를 메시지 리스트에 담아 전송
+				// Add key and User name and Selected List to Msg List
 				messageList.clear();
 				messageList.add("add_chatroom");
 				messageList.add(model.getConnectedName());
-
-				// 생성할 채팅방의 멤버를 리스트에 담음
 				for (String selectedFriend : selectedFriendList) {
 					temp = temp + selectedFriend;
 					if (!selectedFriend.equals(selectedFriendList.get(selectedFriendList.size() - 1)))
 						temp = temp + ", ";
 				}
-
 				messageList.add(temp);
 
 				try {
@@ -476,8 +530,9 @@ public class ChatRoomService extends VBox {
 					messageList.clear();
 					chatroomGrid.getChildren().clear();
 
-					// 채팅방을 채팅방 Grid에 추가
-					addChatroomDataHandle(selectedFriendList);
+					// Add ChatRoom to Grid
+					addChatroomByResponse(selectedFriendList);
+					
 				} catch (IOException e1) {
 					e1.printStackTrace();
 				}
@@ -496,18 +551,26 @@ public class ChatRoomService extends VBox {
 		chatroomGrid.add(cancelButton, 2, 2);
 	}
 
-	// 서버에서 성공 응답이 올 시에 해당 채팅방을 채팅방 리스트에 추가 해주는 메소드
-	void addChatroomDataHandle(List<String> selectedList) {
+	/**
+	 * Add Chatroom to Chatroom Grid by Response
+	 * <br/> Add Chatroom if Response is Valid
+	 * 
+	 * @param selectedList
+	 */
+	void addChatroomByResponse(List<String> selectedList) {
 		messageRcv = model.getMessageRcv();
 
 		String line;
-		String key = "chatroom_added";
+		String key = MsgKeys.ChatroomAddSuccess.getKey();
 
 		try {
 			if ((line = messageRcv.readLine()) != null) {
-				if (line.substring(line.length() - key.length(), line.length()).equals("chatroom_added")) {
+				if (line.substring(line.length() - key.length(), line.length()).equals(key)) {
+					
+					// Add new Chatroom to ChatroomList
 					chatroomList.add((ArrayList<String>) selectedList);
 					String buttonText = "";
+					// Make Chatroom Btn Form
 					for (String selected : selectedList) {
 						buttonText = buttonText + selected;
 						if (selected.equals(selectedList.get(selectedList.size() - 1)))
@@ -518,8 +581,11 @@ public class ChatRoomService extends VBox {
 					newChatroom.setPrefSize(2 * btnWidth, btnHeight);
 					chatroomButtons.add(newChatroom);
 					addChatroomsToGrid(chatroomButtons);
+					// Save Modification
+					model.setChatroomGrid(chatroomGrid);
+					model.setChatroomsList(chatroomButtons);
 				} else {
-					AlertHandler.alert("Already Added!");
+					AlertHandler.alert(ErrMsgs.AlreadyAdded.getMsg());
 					addChatroomHandler(null);
 				}
 			}
@@ -530,10 +596,12 @@ public class ChatRoomService extends VBox {
 
 	}
 
-	/*
-	 * 로그아웃 버튼을 누르면 실행되는 메소드
+	/**
+	 * 1. Send Server Logout status
+	 * <br/>2. Server Updates Connection status
+	 * <br/>3. Change Grid to Login Grid
 	 * 
-	 * 로그인 화면으로 돌아가되 상태 갱신을 위해 서버에 알려줌
+	 * @param logoutEvent
 	 */
 	void logoutHandler(ActionEvent e) {
 		try {
@@ -550,7 +618,11 @@ public class ChatRoomService extends VBox {
 		model.getLoginService().getChildren().addAll(model.getTitleLabel(), model.getLoginGrid());
 	}
 
-	// 친구 목록을 불러오는 메소드
+	/**
+	 * Change to UserManager Grid 
+	 * 
+	 * @param showUserEvent
+	 */
 	void showUserHandler(ActionEvent e) {
 		model.getLoginService().getChildren().clear();
 		model.getLoginService().getChildren().add(model.getChatUserService());

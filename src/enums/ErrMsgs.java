@@ -1,9 +1,12 @@
 package enums;
 
 public enum ErrMsgs {
+	AlreadyOpenedChat("Already Opened Chatroom!"),
+	ChooseOneChatRoom("Choose one Chatroom!"),
+	NoChatRoomChosen("No Chatroom Chosen!"),
 	JoinSuccess("Join Success!"),
 	WrongPWRepeat("Password Not Same!"),
-	AlreadyFriend("Already Added!"),
+	AlreadyAdded("Already Added!"),
 	NoSuchUser("No Such User!"),
 	AddMySelf("Cannot add Yourself!"),
 	NothingInserted("Nothing Inserted!"),

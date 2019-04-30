@@ -45,7 +45,7 @@ import utils.AlertHandler;
 public class LoginService extends VBox {
 	public Stage parentStage;
 	private Model model;
-	private UserManageService chatUserService;
+	private UserManager chatUserService;
 	private JoinService joinService;
 	private BufferedReader messageRcv;
 	private ObjectOutputStream messageListSender;
@@ -67,7 +67,7 @@ public class LoginService extends VBox {
 	 */  
 	public LoginService(Model model) {
 		this.model = model;
-		makeLoginGrid();
+		initLoginGrid();
 		connectToServer();
 	}
 
@@ -75,7 +75,7 @@ public class LoginService extends VBox {
 	/**
 	 * Consist Login Panel
 	 */
-	void makeLoginGrid() {
+	void initLoginGrid() {
 		// message List to send Server 
 		messageList = new ArrayList<String>();
 
@@ -215,7 +215,7 @@ public class LoginService extends VBox {
 					model.setLoginService(this);
 					
 					// Change to ChatUser Grid 
-					chatUserService = new UserManageService(model);
+					chatUserService = new UserManager(model);
 					this.getChildren().clear();
 					this.getChildren().add(chatUserService);
 					return;

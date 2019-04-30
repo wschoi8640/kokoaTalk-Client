@@ -9,8 +9,8 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.List;
 
-import domain.ChatRoomService;
-import domain.UserManageService;
+import domain.ChatRoomManager;
+import domain.UserManager;
 import domain.ChattingRoom;
 import domain.JoinService;
 import domain.LoginService;
@@ -23,8 +23,8 @@ public class Model {
 	private ChattingRoom chattingRoom;
 	private JoinService joinService;
 	private LoginService loginService;
-	private UserManageService chatUserService;
-	private ChatRoomService chatRoomService;
+	private UserManager chatUserService;
+	private ChatRoomManager chatRoomService;
 	private Socket sock;
 	private ObjectInputStream messageListRcv;
 	private ObjectOutputStream messageListSend;
@@ -33,6 +33,7 @@ public class Model {
 	private InputStream in;
 	private OutputStream out;
 	private GridPane friendGrid;
+	private GridPane chatroomGrid;
 	private GridPane loginGrid;
 	private Label titleLabel; 
 	public ChattingRoom getChattingRoom() {
@@ -53,16 +54,16 @@ public class Model {
 	public void setLoginService(LoginService loginService) {
 		this.loginService = loginService;
 	}
-	public UserManageService getChatUserService() {
+	public UserManager getChatUserService() {
 		return chatUserService;
 	}
-	public void setChatUserService(UserManageService chatUserService) {
+	public void setChatUserService(UserManager chatUserService) {
 		this.chatUserService = chatUserService;
 	}
-	public ChatRoomService getChatRoomService() {
+	public ChatRoomManager getChatRoomService() {
 		return chatRoomService;
 	}
-	public void setChatRoomService(ChatRoomService chatRoomService) {
+	public void setChatRoomService(ChatRoomManager chatRoomService) {
 		this.chatRoomService = chatRoomService;
 	}
 	public Socket getSock() {
@@ -155,9 +156,22 @@ public class Model {
 	public void setArgs(String[] args) {
 		this.args = args;
 	}
+	public List<ToggleButton> getChatroomsList() {
+		return chatroomsList;
+	}
+	public void setChatroomsList(List<ToggleButton> chatroomsList) {
+		this.chatroomsList = chatroomsList;
+	}
+	public GridPane getChatroomGrid() {
+		return chatroomGrid;
+	}
+	public void setChatroomGrid(GridPane chatroomGrid) {
+		this.chatroomGrid = chatroomGrid;
+	}
 	private String connectedID;
 	private String connectedName;
 	private List<ToggleButton> friendsList;
+	private List<ToggleButton> chatroomsList;
 	private List<Stage> openedChatrooms;
 	private String [] args;
 	

@@ -36,7 +36,7 @@ import utils.AlertHandler;
  * @author wschoi8640
  * @version 1.0
  */
-public class UserManageService extends VBox {
+public class UserManager extends VBox {
 	private Model model;
 	private LoginService loginService;
 	private Button refreshBtn;
@@ -70,19 +70,19 @@ public class UserManageService extends VBox {
 	 * <br/> consist Panel
 	 * @param model
 	 */
-	public UserManageService(Model model) {
+	public UserManager(Model model) {
 		this.model = model;
 		this.loginService = model.getLoginService();
 		this.sock = model.getSock();
 		model.setChatUserService(this);
-		makeUserManageGrid();
+		initUserManageGrid();
 	}
 
 	
 	/**
 	 * consist user manage Grid
 	 */
-	void makeUserManageGrid() {
+	void initUserManageGrid() {
 		// message List to send Server 
 		messageList = new ArrayList<String>();
 		// user's Friend List
@@ -104,7 +104,7 @@ public class UserManageService extends VBox {
 
 		// shows current User Name
 		userNameLabel = new Label(model.getConnectedName());
-		userNameLabel.setFont(new Font("Consolas", 30.0));
+		userNameLabel.setFont(new Font(Settings.Font.getSetting(), 30.0));
 		userNameLabel.setPrefHeight(btnHeight);
 
 		// btn for Changing Grid(show Friends)
@@ -282,13 +282,13 @@ public class UserManageService extends VBox {
 		}
 	}
 	/**
-	 * Change to ChatRoomService Grid 
+	 * Change to ChatRoomManager Grid 
 	 * 
 	 * @param showChatEvent
 	 */
 	void showChatHandler(ActionEvent e) {
 		// Add ChatRoomService Panel to Primary Stage and save it for later
-		ChatRoomService chatRoomService = new ChatRoomService(model);
+		ChatRoomManager chatRoomService = new ChatRoomManager(model);
 		model.setChatRoomService(chatRoomService);
 		model.getLoginService().getChildren().clear();
 		model.getLoginService().getChildren().add(chatRoomService);
@@ -337,7 +337,7 @@ public class UserManageService extends VBox {
 				messageListRcv = model.getMessageListRcv();
 
 				// Add Key and UserName to Msg List
-				messageList.add(0, "rcv_friends");
+				messageList.add(0, MsgKeys.ReceiveFriends.getKey());
 				messageList.add(1, model.getConnectedName());
 
 				// Send Request to Server
@@ -349,7 +349,7 @@ public class UserManageService extends VBox {
 				messageList = (ArrayList<String>) messageListRcv.readObject();
 
 				// make FriendBtnList from response
-				if (messageList.get(0).equals("rcv_ok")) {
+				if (messageList.get(0).equals(MsgKeys.ReceiveSuccess.getKey())) {
 					for (int i = 1; i < messageList.size(); i++) {
 						tmpFriend = new ToggleButton(messageList.get(i));
 						tmpFriend.setShape(new Circle(10));
@@ -433,6 +433,7 @@ public class UserManageService extends VBox {
 						// Receive Server Response
 						messageRcv = model.getMessageRcv();
 						if ((message = messageRcv.readLine()) != null) {
+							// Remove Successful
 							if (message.equals(MsgKeys.RemoveSuccess.getKey()) || message.equals("yrmv_ok")) {
 								List<ToggleButton> tempList = new ArrayList<ToggleButton>();
 								tempList.addAll(friendsButtonList);
@@ -545,7 +546,7 @@ public class UserManageService extends VBox {
 
 							// When Already added Friend
 							if (message.equals(MsgKeys.AddFailByDupli.getKey()) || message.equals("yfriend_exists")) {
-								AlertHandler.alert(ErrMsgs.AlreadyFriend.getMsg());
+								AlertHandler.alert(ErrMsgs.AlreadyAdded.getMsg());
 								addFriendHandler(e);
 							}
 						}
