@@ -31,8 +31,11 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
-/*
- * 이 클래스는 로그인 화면을 구성하고 채팅 서버에 연결한다.
+/**
+ * This class consists Login Panel and Connect to Server
+ * 
+ * @author wschoi8640
+ * @version 1.0
  */
 public class LoginService extends VBox {
 	public Stage parentStage;
@@ -43,7 +46,7 @@ public class LoginService extends VBox {
 	private ObjectOutputStream messageListSender;
 	private ObjectInputStream messageListRcv;
 	private PrintWriter messageSend;
-	private List<String> messageList;
+	private List<String> messageList; 
 	private GridPane loginGrid;
 	private TextField idField;
 	private PasswordField pwField;
@@ -53,72 +56,81 @@ public class LoginService extends VBox {
 	private String userID;
 	private String userPW;
 	private Socket sock;
-	private String serverIP = "172.30.1.42";
+	private String serverIP = "192.168.0.43";
 	private int serverPort = 10001;
 
-	// 화면을 구성하고 서버에 연결
+	/**
+	 * Consist Panel and Connect to Server
+	 */  
 	public LoginService(Model model) {
 		this.model = model;
-		initialize();
-		handleConnect();
+		makeLoginGrid();
+		connectToServer();
 	}
 
-	void initialize() {
+	
+	/**
+	 * Consist Login Panel
+	 */
+	void makeLoginGrid() {
+		// message List to send Server 
 		messageList = new ArrayList<String>();
 
-		// 로그인 용 Grid
+		// Grid for Login
 		loginGrid = new GridPane();
 		loginGrid.setAlignment(Pos.CENTER);
 		loginGrid.setHgap(15);
 		loginGrid.setVgap(15);
 
-		// Grid에 프로그램 제목 추가
+		// Title for Grid
 		titleLabel = new Label("KokoaTalk");
 		titleLabel.setFont(new Font("Consolas", 30.0));
 
-		// ID 입력 필드
+		// ID field
 		idField = new TextField();
 		idField.setPromptText("Insert ID");
 		idField.setPrefWidth(200);
 
-		// Password 입력 필드
+		// Password field
 		pwField = new PasswordField();
 		pwField.setPromptText("Insert Password");
 		pwField.setPrefWidth(200);
 
-		// 로그인 버튼
+		// Login Button
 		loginBtn = new Button("Login");
 		loginBtn.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-		// 로그인 버튼 이벤트 설정
+		// Set Login Button Event
 		loginBtn.setOnAction(e -> loginHandler(e));
 
-		// 회원가입 버튼
+		// Join Button
 		joinBtn = new Button("join");
 		joinBtn.setPrefWidth(200);
-		// 회원가입 버튼 이벤트 설정
+		// Set Join Button Event
 		joinBtn.setOnAction(e -> joinHandler(e));
 
+		// Add all
 		loginGrid.add(idField, 1, 1);
 		loginGrid.add(loginBtn, 2, 1, 2, 2);
 		loginGrid.add(pwField, 1, 2);
 		loginGrid.add(joinBtn, 1, 3);
-		// 화면 전환을 위해 저장
+		
+		// save Grid for later
 		model.setLoginGrid(loginGrid);
 		model.setTitleLabel(titleLabel);
 
 		this.setAlignment(Pos.CENTER);
 		this.setSpacing(100);
 		this.getChildren().addAll(titleLabel, loginGrid);
-
 	}
 
-	/*
-	 * 서버에 연결하기 위한 메소드
-	 * 
-	 * 1. 서버에 연결한다. 2. 서버 연결후, 메시지 전송을 위한 객체를 생성한다. 3. 다른 클래스에서 사용하기 위해 저장한다.
-	 * 
+	/**
+	 * This Method Connects to Server
+	 * <br/>
+	 * <br/>1. Connects to Server.
+	 * <br/>2. Makes Stream Object for Message. 
+	 * <br/>3. Save Objects for later.
 	 */
-	void handleConnect() {
+	void connectToServer() {
 		try {
 			sock = new Socket(serverIP, serverPort);
 
@@ -140,15 +152,19 @@ public class LoginService extends VBox {
 		}
 	}
 
-	/*
-	 * 로그인 버튼 누를시 실행되는 메소드
+	/**
+	 * Execute on Login Btn Event
+	 * <br/>
+	 * <br/>1. Check if ID, PW field is blank 
+	 * <br/>2. Send Server ID, PW. 
+	 * <br/>3. Receive Server Response
+	 * <br/>4. Show Result (suc/fail)
 	 * 
-	 * 1. ID와 Password가 입력되었는지 확인한다. 2. 서버에 입력된 ID와 Password를 보낸다. 3. 서버에서 돌아온 응답에
-	 * 따라 사용자에게 알려준다.(성공, 실패)
-	 * 
+	 * @param loginEvent
 	 */
 	void loginHandler(ActionEvent event) {
-		// 필드에 입력 여부 확인
+		
+		// Check if ID, PW field is blank 
 		if (idField.getText().trim().isEmpty()) {
 			alertHandler("Enter User ID!");
 			return;
@@ -158,18 +174,18 @@ public class LoginService extends VBox {
 			return;
 		}
 
-		// 입력된 값을 서버로 보냄
+		// Send Server ID, PW
 		if (sock.isConnected()) {
 			userID = idField.getText();
 			userPW = pwField.getText();
 
-			// 서버에 보낼 List에 저장
+			// Add key and field Values to Msg List
 			messageList.add(0, "do_login");
 			messageList.add(1, userID);
 			messageList.add(2, userPW);
 
 			try {
-				// List를 서버로 보내기
+				// Send List to Server
 				messageListSender.writeObject(messageList);
 				messageListSender.flush();
 				messageListSender.reset();
@@ -178,41 +194,41 @@ public class LoginService extends VBox {
 			}
 			messageList.clear();
 
-			// 서버의 응답 처리
-			String response_message;
+			// Receive Server response
+			String responseMsg;
 			try {
-				// 응답은 String 형태로 돌아옴
-				response_message = messageRcv.readLine();
+				// Response Key (suc/fail)
+				responseMsg = messageRcv.readLine();
 
-				// 로그인에 성공한 경우
-				if (response_message.substring(0, 5).equals("hello") || response_message.substring(0, 5).equals("yhell")) {
+				// Login Successful
+				if (responseMsg.substring(0, 5).equals("hello") || responseMsg.substring(0, 5).equals("yhell")) {
 					alertHandler("Login Success!");
 
-					// 접속자의 데이터 저장
-					model.setConnectedName(response_message.substring(6, response_message.length()));
+					// Save user Data
+					model.setConnectedName(responseMsg.substring(6, responseMsg.length()));
 					model.setConnectedID(userID);
 
-					// 최상위 스테이지로 사용하기 위해 저장
+					// Save this Grid for later
 					model.setLoginService(this);
 					
-					// 친구 목록 보여주는 클래스 호출,추가
+					// Change to ChatUser Grid 
 					chatUserService = new ChatUserSevice(model);
 					this.getChildren().clear();
 					this.getChildren().add(chatUserService);
 					return;
 				}
 
-				// 암호가 틀릴 경우
-				if (response_message.equals("wrong_pw")) {
-					// 비밀번호 창 비우기
+				// Wrong Password
+				if (responseMsg.equals("wrong_pw")) {
+					// Empty Password Field and Alert
 					pwField.setText("");
 					alertHandler("Wrong Password!");
 					return;
 				}
 
-				// ID가 없는 경우
-				if (response_message.equals("no_id")) {
-					// 입력 필드 모두 비우기
+				// No such ID
+				if (responseMsg.equals("no_id")) {
+					// Empty Both Fields and Alert
 					idField.setText("");
 					pwField.setText("");
 					alertHandler("No Such ID exists!");
@@ -224,15 +240,18 @@ public class LoginService extends VBox {
 		}
 	}
 
-	/*
-	 * 강제로 창을 종료할시 실행되는 메소드
+	/**
+	 * When Window is closed without Logout
+	 * <br/>
+	 * <br/>1. Send Server Logout Msg 
+	 * <br/>2. Close Msg-send Objects
+	 * <br/>3. Close Window
 	 * 
-	 * 1. 서버에 로그아웃 한다는 메시지 전송 2. 각 메시지 전송 객체 및 소켓 닫기 3. 창 종료
-	 * 
+	 * @param WindowEvent
 	 */
 	void closeHandler(WindowEvent e) {
 		try {
-			// 메시지 전송 (응답은 기다리지 않음)
+			// Doesn't wait response
 			messageList.clear();
 			messageList.add("do_logout");
 			messageListSender.writeObject(messageList);
@@ -248,7 +267,27 @@ public class LoginService extends VBox {
 
 	}
 
-	// 결과 값을 새 창으로 알려주는 메소드
+	/**
+	 * Execute on Join Btn Event
+	 * 
+	 * @param joinEvent
+	 */ 
+	void joinHandler(ActionEvent event) {
+		// Save this Grid for later
+		model.setLoginService(this);
+
+		// Change to Join Grid
+		joinService = new JoinService(model);
+		this.getChildren().clear();
+		this.getChildren().add(joinService);
+	}
+	
+
+	/**
+	 * Shows results using Alert
+	 * 
+	 * @param message
+	 */
 	void alertHandler(String message) {
 		Alert alert = new Alert(AlertType.INFORMATION);
 		alert.setTitle(message);
@@ -256,16 +295,5 @@ public class LoginService extends VBox {
 		alert.setContentText(message);
 
 		alert.showAndWait();
-	}
-
-	// join 버튼 누를시 실행되는 메소드
-	void joinHandler(ActionEvent event) {
-		// 최상위 스테이지로 사용하기 위해 저장
-		model.setLoginService(this);
-
-		// 회원가입 클래스 생성 및 추가
-		joinService = new JoinService(model);
-		this.getChildren().clear();
-		this.getChildren().add(joinService);
 	}
 }
