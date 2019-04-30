@@ -1,10 +1,11 @@
-package com.wschoi.kokoaClient;
 
-import com.wschoi.kokoaClient.enums.ClientSettings;
 
+import domain.*;
+import enums.ClientSettings;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import model.Model;
 
 /**
  * Main Class for KokoaClient

@@ -1,4 +1,4 @@
-package com.wschoi.kokoaClient;
+package domain;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -27,6 +27,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import model.Model;
 
 /**
  * 이 클래스는 회원가입 화면을 구성한다.

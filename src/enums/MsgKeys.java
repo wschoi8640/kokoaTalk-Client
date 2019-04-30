@@ -1,4 +1,4 @@
-package com.wschoi.kokoaClient.enums;
+package enums;
 
 public enum MsgKeys {
 	LogoutRequest("do_logout"),

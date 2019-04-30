@@ -1,4 +1,4 @@
-package com.wschoi.kokoaClient;
+package model;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -9,6 +9,11 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.List;
 
+import domain.ChatRoomService;
+import domain.ChatUserSevice;
+import domain.ChattingRoom;
+import domain.JoinService;
+import domain.LoginService;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.GridPane;

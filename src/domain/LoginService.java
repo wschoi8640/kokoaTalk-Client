@@ -1,4 +1,4 @@
-package com.wschoi.kokoaClient;
+package domain;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,10 +13,9 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.wschoi.kokoaClient.enums.AlertMsgs;
-import com.wschoi.kokoaClient.enums.ClientSettings;
-import com.wschoi.kokoaClient.enums.MsgKeys;
-
+import enums.AlertMsgs;
+import enums.ClientSettings;
+import enums.MsgKeys;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.geometry.Point2D;
@@ -34,6 +33,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import model.Model;
 
 /**
  * This class consists Login Panel and Connect to Server
@@ -251,7 +251,7 @@ public class LoginService extends VBox {
 	 * 
 	 * @param WindowEvent
 	 */
-	void closeHandler(WindowEvent e) {
+	public void closeHandler(WindowEvent e) {
 		try {
 			// Doesn't wait response
 			messageList.clear();

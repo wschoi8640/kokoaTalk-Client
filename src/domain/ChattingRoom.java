@@ -1,4 +1,4 @@
-package com.wschoi.kokoaClient;
+package domain;
 
 import java.net.*;
 import java.util.ArrayList;
@@ -11,6 +11,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import model.Model;
 
 import java.io.*;
 

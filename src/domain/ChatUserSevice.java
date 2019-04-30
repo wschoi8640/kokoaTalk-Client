@@ -1,4 +1,4 @@
-package com.wschoi.kokoaClient;
+package domain;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -24,6 +24,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import model.Model;
 
 /**
  * 이 클래스는 사용자의 친구 목록을 구성하고 추가,삭제할 수 있도록 한다.
