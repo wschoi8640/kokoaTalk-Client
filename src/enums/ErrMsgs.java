@@ -1,6 +1,10 @@
 package enums;
 
-public enum AlertMsgs {
+public enum ErrMsgs {
+	AlreadyFriend("Already Added!"),
+	NoSuchUser("No Such User!"),
+	AddMySelf("Cannot add Yourself!"),
+	NothingInserted("Nothing Inserted!"),
 	NoSuchID("No Such ID exists!"),
 	WrongPassword("Wrong Password!"),
 	LoginSuccess("Login Success!"),
@@ -8,7 +12,7 @@ public enum AlertMsgs {
 	BlankIdField("Enter User ID!");
 	
 	String msg;
-	AlertMsgs(String msg){
+	ErrMsgs(String msg){
 		this.msg = msg;
 	}
 	public String getMsg(){

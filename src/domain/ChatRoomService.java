@@ -35,6 +35,7 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import model.Model;
+import utils.AlertHandler;
 
 /*
  * 이 클래스는 사용자의 채팅방 목록을 구성하고 추가,삭제할 수 있도록 한다.
@@ -268,10 +269,10 @@ public class ChatRoomService extends VBox {
 
 		// 채팅방이 제대로 선택되었는지 확인한다
 		if (count == 0) {
-			model.getLoginService().alertHandler("No Chatroom Chosen!");
+			AlertHandler.alert("No Chatroom Chosen!");
 		}
 		if (count > 1) {
-			model.getLoginService().alertHandler("Choose one Chatroom!");
+			AlertHandler.alert("Choose one Chatroom!");
 		}
 
 		// 이미 열려 있는 채팅방이라면 return하고 아닐시 채팅방을 띄운다.
@@ -279,7 +280,7 @@ public class ChatRoomService extends VBox {
 			// 열려있는 채팅방인지 확인한다.
 			for (Stage openedChatroom : openedChatroomList) {
 				if (openedChatroom.getTitle().equals(selectedChatroom)) {
-					model.getLoginService().alertHandler("Already Opened Chatroom!");
+					AlertHandler.alert("Already Opened Chatroom!");
 					return;
 				}
 			}
@@ -518,7 +519,7 @@ public class ChatRoomService extends VBox {
 					chatroomButtons.add(newChatroom);
 					addChatroomsToGrid(chatroomButtons);
 				} else {
-					model.getLoginService().alertHandler("Already Added!");
+					AlertHandler.alert("Already Added!");
 					addChatroomHandler(null);
 				}
 			}

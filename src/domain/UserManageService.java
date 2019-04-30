@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import enums.ErrMsgs;
 import enums.ClientSettings;
 import enums.MsgKeys;
 import javafx.beans.value.ChangeListener;
@@ -27,6 +28,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import model.Model;
+import utils.AlertHandler;
 
 /**
  * This class consists UserManage Panel and offers UserManage service 
@@ -482,14 +484,14 @@ public class UserManageService extends VBox {
 
 			// Check if Field is blank
 			if (friend.equals("Insert Friend's ID")) {
-				loginService.alertHandler("Nothing Inserted!");
+				AlertHandler.alert(ErrMsgs.NothingInserted.getMsg());
 				addFriendHandler(e);
 				return;
 			}
 
 			// Check if ID is User's
 			if (friend.equals(model.getConnectedID())) {
-				loginService.alertHandler("Cannot add Yourself!");
+				AlertHandler.alert(ErrMsgs.AddMySelf.getMsg());
 				addFriendHandler(e);
 				return;
 			} else {
@@ -537,13 +539,13 @@ public class UserManageService extends VBox {
 
 							// When such id not Exist
 							if (message.equals(MsgKeys.AddFailByID.getKey()) || message.equals("yno_such_user")) {
-								loginService.alertHandler("No such User!");
+								AlertHandler.alert(ErrMsgs.NoSuchUser.getMsg());
 								addFriendHandler(e);
 							}
 
 							// When Already added Friend
 							if (message.equals(MsgKeys.AddFailByDupli.getKey()) || message.equals("yfriend_exists")) {
-								loginService.alertHandler("Already Added!");
+								AlertHandler.alert(ErrMsgs.AlreadyFriend.getMsg());
 								addFriendHandler(e);
 							}
 						}

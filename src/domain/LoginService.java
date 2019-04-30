@@ -13,7 +13,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
-import enums.AlertMsgs;
+import enums.ErrMsgs;
 import enums.ClientSettings;
 import enums.MsgKeys;
 import javafx.application.Platform;
@@ -34,6 +34,7 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import model.Model;
+import utils.AlertHandler;
 
 /**
  * This class consists Login Panel and Connect to Server
@@ -168,11 +169,11 @@ public class LoginService extends VBox {
 		
 		// Check if ID, PW field is blank 
 		if (idField.getText().trim().isEmpty()) {
-			alertHandler(AlertMsgs.BlankIdField.getMsg());
+			AlertHandler.alert(ErrMsgs.BlankIdField.getMsg());
 			return;
 		}
 		if (pwField.getText().trim().isEmpty()) {
-			alertHandler(AlertMsgs.BlankPWField.getMsg());
+			AlertHandler.alert(ErrMsgs.BlankPWField.getMsg());
 			return;
 		}
 
@@ -204,7 +205,7 @@ public class LoginService extends VBox {
 
 				// Login Successful
 				if (responseMsg.substring(0, 5).equals(MsgKeys.LoginSuccess.getKey()) || responseMsg.substring(0, 5).equals("yhell")) {
-					alertHandler(AlertMsgs.LoginSuccess.getMsg());
+					AlertHandler.alert(ErrMsgs.LoginSuccess.getMsg());
 
 					// Save user Data
 					model.setConnectedName(responseMsg.substring(6, responseMsg.length()));
@@ -224,7 +225,7 @@ public class LoginService extends VBox {
 				if (responseMsg.equals(MsgKeys.LoginFailByPW.getKey())) {
 					// Empty Password Field and Alert
 					pwField.setText("");
-					alertHandler(AlertMsgs.WrongPassword.getMsg());
+					AlertHandler.alert(ErrMsgs.WrongPassword.getMsg());
 					return;
 				}
 
@@ -233,7 +234,7 @@ public class LoginService extends VBox {
 					// Empty Both Fields and Alert
 					idField.setText("");
 					pwField.setText("");
-					alertHandler(AlertMsgs.NoSuchID.getMsg());
+					AlertHandler.alert(ErrMsgs.NoSuchID.getMsg());
 					return;
 				}
 			} catch (IOException e) {
@@ -282,20 +283,5 @@ public class LoginService extends VBox {
 		joinService = new JoinService(model);
 		this.getChildren().clear();
 		this.getChildren().add(joinService);
-	}
-	
-
-	/**
-	 * Shows results using Alert
-	 * 
-	 * @param message
-	 */
-	void alertHandler(String message) {
-		Alert alert = new Alert(AlertType.INFORMATION);
-		alert.setTitle(message);
-		alert.setHeaderText(null);
-		alert.setContentText(message);
-
-		alert.showAndWait();
 	}
 }

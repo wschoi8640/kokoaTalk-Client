@@ -28,6 +28,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import model.Model;
+import utils.AlertHandler;
 
 /**
  * 이 클래스는 회원가입 화면을 구성한다.
@@ -134,25 +135,25 @@ public class JoinService extends VBox {
 	void joinHandler(ActionEvent event) {
 		// 비어있는 필드가 없는지 확인
 		if (nameField.getText().trim().isEmpty()) {
-			loginService.alertHandler("Enter User Name!");
+			AlertHandler.alert("Enter User Name!");
 			return;
 		}
 		if (idField.getText().trim().isEmpty()) {
-			loginService.alertHandler("Enter User ID!");
+			AlertHandler.alert("Enter User ID!");
 			return;
 		}
 		if (pwField.getText().trim().isEmpty()) {
-			loginService.alertHandler("Enter User Password!");
+			AlertHandler.alert("Enter User Password!");
 			return;
 		}
 		if (pw2Field.getText().trim().isEmpty()) {
-			loginService.alertHandler("Enter User Password!");
+			AlertHandler.alert("Enter User Password!");
 			return;
 		}
 
 		// 비밀번호 반복 일치 여부를 확인
 		if (!pwField.getText().equals(pw2Field.getText())) {
-			loginService.alertHandler("Password Not Same!");
+			AlertHandler.alert("Password Not Same!");
 			return;
 		}
 
