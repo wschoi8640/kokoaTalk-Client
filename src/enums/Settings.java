@@ -1,6 +1,7 @@
 package enums;
 
-public enum ClientSettings {
+public enum Settings {
+	WelcomeMsg("Welcome!"),
 	ConnectedFriendColor("-fx-background-color: Yellow"),
 	Font("Consolas"),
 	LoginServerPort(10001),
@@ -8,10 +9,10 @@ public enum ClientSettings {
 	Title("KokoaTalk");
 	String setting;
 	int num;
-	ClientSettings(String strSetting){
+	Settings(String strSetting){
 		this.setting = strSetting;
 	}
-	ClientSettings(int num){
+	Settings(int num){
 		this.num = num;
 	}
 	public String getSetting(){

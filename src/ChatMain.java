@@ -1,7 +1,7 @@
 
 
 import domain.*;
-import enums.ClientSettings;
+import enums.Settings;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -36,7 +36,7 @@ public class ChatMain extends Application
 				Scene scene = new Scene(loginService,600,700);
 				
 				primaryStage.setOnCloseRequest(e-> loginService.closeHandler(e));
-				primaryStage.setTitle(ClientSettings.Title.getSetting());
+				primaryStage.setTitle(Settings.Title.getSetting());
 				primaryStage.setScene(scene);
 				primaryStage.show();
 		}

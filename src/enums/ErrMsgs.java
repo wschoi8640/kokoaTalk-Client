@@ -1,6 +1,8 @@
 package enums;
 
 public enum ErrMsgs {
+	JoinSuccess("Join Success!"),
+	WrongPWRepeat("Password Not Same!"),
 	AlreadyFriend("Already Added!"),
 	NoSuchUser("No Such User!"),
 	AddMySelf("Cannot add Yourself!"),
@@ -8,7 +10,9 @@ public enum ErrMsgs {
 	NoSuchID("No Such ID exists!"),
 	WrongPassword("Wrong Password!"),
 	LoginSuccess("Login Success!"),
+	BlankNameField("Enter User Name!"),
 	BlankPWField("Enter User Password!"),
+	BlankRepeatPW("Repeat User Password!"),
 	BlankIdField("Enter User ID!");
 	
 	String msg;

@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 import enums.ErrMsgs;
-import enums.ClientSettings;
+import enums.Settings;
 import enums.MsgKeys;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -252,7 +252,7 @@ public class UserManageService extends VBox {
 							// Check if Friend exists
 							if (friendButton.getText().equals(connectedFriend)) {
 								// Update Color
-								friendButton.setStyle(ClientSettings.ConnectedFriendColor.getSetting());
+								friendButton.setStyle(Settings.ConnectedFriendColor.getSetting());
 								// Apply new Style
 								tempList.remove(friendButton);
 								tempList.add(friendButton);

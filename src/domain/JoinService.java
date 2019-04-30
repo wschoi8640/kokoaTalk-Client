@@ -12,6 +12,9 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+import enums.ErrMsgs;
+import enums.MsgKeys;
+import enums.Settings;
 import javafx.event.ActionEvent;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
@@ -31,7 +34,7 @@ import model.Model;
 import utils.AlertHandler;
 
 /**
- * 이 클래스는 회원가입 화면을 구성한다.
+ * This class consists Join Panel
  */
 public class JoinService extends VBox {
 	private LoginService loginService;
@@ -54,63 +57,69 @@ public class JoinService extends VBox {
 	private BufferedReader messageRcv;
 	private ObjectOutputStream messageListSend;
 
-	// 최상위 스테이지와 연결된 소켓을 가져온 후 화면 구성
+	/**
+	 * receive Primary Stage and Socket Object
+	 *<br/> consist Panel
+	 *
+	 * @param model
+	 */
 	public JoinService(Model model) {
 		this.model = model;
 		this.loginService = model.getLoginService();
 		this.sock = model.getSock();
-		initialize();
+		makeJoinGrid();
 	}
 
-	void initialize() {
+	void makeJoinGrid() {
+		// message List to send Server 
 		messageList = new ArrayList<String>();
 
-		// 회원가입 용 Grid
+		// Grid for Join
 		joinGrid = new GridPane();
 		joinGrid.setAlignment(Pos.CENTER);
 		joinGrid.setHgap(15);
 		joinGrid.setVgap(15);
 
-		// 회원가입 용 타이틀 설정
-		titleLabel = new Label("Welcome !");
-		titleLabel.setFont(new Font("Consolas", 30.0));
+		// Title for Join Grid
+		titleLabel = new Label(Settings.WelcomeMsg.getSetting());
+		titleLabel.setFont(new Font(Settings.Font.getSetting(), 30.0));
 
-		// 이름 입력 필드
+		// Name Field
 		nameField = new TextField();
 		nameField.setPromptText("Insert Your Name");
 		nameField.setPrefWidth(200);
 
-		// ID 입력 필드
+		// ID Field
 		idField = new TextField();
 		idField.setPromptText("Insert New ID");
 		idField.setPrefWidth(200);
 
-		// PW 입력 필드
+		// PW Field
 		pwField = new PasswordField();
 		pwField.setPromptText("Set Password");
 		pwField.setPrefWidth(200);
 
-		// PW 반복 필드
+		// PW Repeat Field
 		pw2Field = new PasswordField();
 		pw2Field.setPromptText("Repeat Password");
 		pw2Field.setPrefWidth(200);
 
-		// 가입하기 버튼
+		// Join Btn
 		joinBtn = new Button("join");
 		joinBtn.setPrefWidth(200);
-		// 가입하기 버튼 이벤트 설정
+		// Set Join Button Event
 		joinBtn.setOnAction(e -> joinHandler(e));
 
-		// 리셋 버튼
+		// Reset Btn
 		resetBtn = new Button("reset");
 		resetBtn.setPrefWidth(200);
-		// 리셋 버튼 이벤트 설정
+		// Set Reset Button Event
 		resetBtn.setOnAction(e -> resetHandler(e));
 
-		// 뒤로가기 버튼
+		// Back Btn
 		backBtn = new Button("back");
 		backBtn.setPrefWidth(200);
-		// 뒤로가기 버튼 이벤트 설정
+		// Set Back Button Event
 		backBtn.setOnAction(e -> backHandler(e));
 
 		joinGrid.add(nameField, 0, 1);
@@ -127,38 +136,40 @@ public class JoinService extends VBox {
 	}
 
 	/**
-	 * 회원가입 버튼 누를시 실행되는 메소드
-	 * 
-	 * 1. 비어있는 필드가 없는지 확인한다. 2. 비밀 번호 반복 일치하는지 확인한다. 3. 서버에 입력된 이름,ID,비밀번호를 보낸다. 4.
-	 * 돌아온 응답에 맞게 사용자에게 알려준다.
+	 * Execute on Login Btn Event
+	 * <br/>
+	 * <br/>1. Check if any Field is blank
+	 * <br/>2. Check if PW and PW2 same 
+	 * <br/>3. Send Server field Vals 
+	 * <br/>4. Receive Server response
+	 * <br/>5. Show user Result
 	 */
 	void joinHandler(ActionEvent event) {
-		// 비어있는 필드가 없는지 확인
+		// Check if any Field is blank
 		if (nameField.getText().trim().isEmpty()) {
-			AlertHandler.alert("Enter User Name!");
+			AlertHandler.alert(ErrMsgs.BlankNameField.getMsg());
 			return;
 		}
 		if (idField.getText().trim().isEmpty()) {
-			AlertHandler.alert("Enter User ID!");
+			AlertHandler.alert(ErrMsgs.BlankIdField.getMsg());
 			return;
 		}
 		if (pwField.getText().trim().isEmpty()) {
-			AlertHandler.alert("Enter User Password!");
+			AlertHandler.alert(ErrMsgs.BlankPWField.getMsg());
 			return;
 		}
 		if (pw2Field.getText().trim().isEmpty()) {
-			AlertHandler.alert("Enter User Password!");
+			AlertHandler.alert(ErrMsgs.BlankRepeatPW.getMsg());
 			return;
 		}
 
-		// 비밀번호 반복 일치 여부를 확인
+		// Check if PW and PW2 same 
 		if (!pwField.getText().equals(pw2Field.getText())) {
-			AlertHandler.alert("Password Not Same!");
+			AlertHandler.alert(ErrMsgs.WrongPWRepeat.getMsg());
 			return;
 		}
 
 		try {
-			// 입력된 값을 서버로 보냄
 			if (sock.isConnected()) {
 				messageListSend = model.getMessageListSend();
 				messageRcv = model.getMessageRcv();
@@ -167,31 +178,37 @@ public class JoinService extends VBox {
 				userID = idField.getText();
 				userPW = pwField.getText();
 
-				messageList.add(0, "do_join");
+				// Add key and Field Vals to List
+				messageList.add(0, MsgKeys.JoinRequest.getKey());
 				messageList.add(1, userName);
 				messageList.add(2, userID);
 				messageList.add(3, userPW);
 
+				// Send Server List
 				messageListSend.writeObject(messageList);
 				messageListSend.flush();
 				messageListSend.reset();
 				messageList.clear();
 
-				// 돌아온 응답을 처리
+				// Receive response
 				String rcv_message = messageRcv.readLine();
 
-				// 회원 가입에 성공시
-				if (rcv_message.equals("join_ok")) {
-					// 로그인 화면으로 돌아감
+				// Join Successful
+				if (rcv_message.equals(MsgKeys.JoinSuccess.getKey())) {
+					AlertHandler.alert(ErrMsgs.JoinSuccess.getMsg());
+					// Return to Login Grid
 					model.getLoginService().getChildren().clear();
 					model.getLoginService().getChildren().addAll(model.getTitleLabel(), model.getLoginGrid());
 					return;
 				}
 
-				// 회원가입 실패시
-				if (rcv_message.equals("join_fail")) {
-					// 입력 필드 비우기
+				// Join Fail
+				if (rcv_message.equals(MsgKeys.JoinFail.getKey())) {
+					// Empty Fields
+					nameField.clear();
 					idField.clear();
+					pwField.clear();
+					pw2Field.clear();
 					messageList.clear();
 					return;
 				}
@@ -201,7 +218,12 @@ public class JoinService extends VBox {
 		}
 	}
 
-	// 새로 입력하기 위해 사용되는 메소드
+	/**
+	 * Execute on Reset Btn Event
+	 * <br/> Empty every fields
+	 * 
+	 * @param resetEvent
+	 */
 	void resetHandler(ActionEvent event) {
 		nameField.clear();
 		idField.clear();
@@ -209,7 +231,12 @@ public class JoinService extends VBox {
 		pw2Field.clear();
 	}
 
-	// 로그인 화면으로 돌아갈 때 사용하는 메소드
+	/**
+	 * Execute on Back Btn Event
+	 * <br/> Go back to Login Grid
+	 * 
+	 * @param backEvent
+	 */
 	void backHandler(ActionEvent event) {
 		model.getLoginService().getChildren().clear();
 		model.getLoginService().getChildren().addAll(model.getTitleLabel(), model.getLoginGrid());

@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import enums.ErrMsgs;
-import enums.ClientSettings;
+import enums.Settings;
 import enums.MsgKeys;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -86,8 +86,8 @@ public class LoginService extends VBox {
 		loginGrid.setVgap(15);
 
 		// Title for Grid
-		titleLabel = new Label(ClientSettings.Title.getSetting());
-		titleLabel.setFont(new Font(ClientSettings.Font.getSetting(), 30.0));
+		titleLabel = new Label(Settings.Title.getSetting());
+		titleLabel.setFont(new Font(Settings.Font.getSetting(), 30.0));
 
 		// ID field
 		idField = new TextField();
@@ -135,7 +135,7 @@ public class LoginService extends VBox {
 	 */
 	void connectToServer() {
 		try {
-			sock = new Socket(ClientSettings.ServerIP.getSetting(), ClientSettings.LoginServerPort.getNum());
+			sock = new Socket(Settings.ServerIP.getSetting(), Settings.LoginServerPort.getNum());
 
 			InputStream in = sock.getInputStream();
 			OutputStream out = sock.getOutputStream();

@@ -1,6 +1,9 @@
 package enums;
 
 public enum MsgKeys {
+	JoinFail("join_fail"),
+	JoinSuccess("join_ok"),
+	JoinRequest("do_join"),
 	AddFailByDupli("friend_exists"),
 	AddFailByID("no_such_user"),
 	AddSuccess("add"),
