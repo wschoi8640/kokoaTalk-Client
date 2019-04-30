@@ -1,13 +1,17 @@
 package com.wschoi.kokoaClient;
 
 public enum MsgKeys {
-	BlankIdField("Enter User ID!");
+	LogoutRequest("do_logout"),
+	LoginFailByID("no_id"),
+	LoginFailByPW("wrong_pw"),
+	LoginResponse("hello"),
+	LoginRequest("do_login");
 	
-	String msg;
-	MsgKeys(String msg){
-		this.msg = msg;
+	String key;
+	MsgKeys(String key){
+		this.key = key;
 	}
-	String getMsg(){
-		return msg;
+	String getKey(){
+		return key;
 	}
 }

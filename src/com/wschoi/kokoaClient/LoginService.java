@@ -178,7 +178,7 @@ public class LoginService extends VBox {
 			userPW = pwField.getText();
 
 			// Add key and field Values to Msg List
-			messageList.add(0, "do_login");
+			messageList.add(0, MsgKeys.LoginRequest.getKey());
 			messageList.add(1, userID);
 			messageList.add(2, userPW);
 
@@ -199,7 +199,7 @@ public class LoginService extends VBox {
 				responseMsg = messageRcv.readLine();
 
 				// Login Successful
-				if (responseMsg.substring(0, 5).equals("hello") || responseMsg.substring(0, 5).equals("yhell")) {
+				if (responseMsg.substring(0, 5).equals(MsgKeys.LoginResponse.getKey()) || responseMsg.substring(0, 5).equals("yhell")) {
 					alertHandler(AlertMsgs.LoginSuccess.getMsg());
 
 					// Save user Data
@@ -217,7 +217,7 @@ public class LoginService extends VBox {
 				}
 
 				// Wrong Password
-				if (responseMsg.equals("wrong_pw")) {
+				if (responseMsg.equals(MsgKeys.LoginFailByPW.getKey())) {
 					// Empty Password Field and Alert
 					pwField.setText("");
 					alertHandler(AlertMsgs.WrongPassword.getMsg());
@@ -225,7 +225,7 @@ public class LoginService extends VBox {
 				}
 
 				// No such ID
-				if (responseMsg.equals("no_id")) {
+				if (responseMsg.equals(MsgKeys.LoginFailByID.getKey())) {
 					// Empty Both Fields and Alert
 					idField.setText("");
 					pwField.setText("");
@@ -251,7 +251,7 @@ public class LoginService extends VBox {
 		try {
 			// Doesn't wait response
 			messageList.clear();
-			messageList.add("do_logout");
+			messageList.add(MsgKeys.LogoutRequest.getKey());
 			messageListSender.writeObject(messageList);
 			messageListSender.flush();
 			messageListSender.reset();
