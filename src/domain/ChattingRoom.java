@@ -4,6 +4,7 @@ import java.net.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import enums.Settings;
 import javafx.event.ActionEvent;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -60,7 +61,7 @@ public class ChattingRoom extends VBox {
 	void handleConnect() {
 		try {
 			// 서버 IP의 채팅서버 Port로 연결한다.
-			sock = new Socket("192.168.0.43", 10002);
+			sock = new Socket(Settings.ServerIP.getSetting(), 10002);
 			new ChattingRoomThread(sock).start();
 		} catch (IOException e) {
 			e.printStackTrace();

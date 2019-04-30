@@ -10,14 +10,21 @@ import enums.MsgKeys;
 import javafx.event.ActionEvent;
 import model.Model;
 
+/**
+ * This class sends Server Logout Msg and Change Grid to Login
+ * 
+ * @author wschoi8640
+ * @version 1.0
+ */
 public class LogoutService {
-	
-	private static List<String> messageList = new ArrayList(); 
+
+	private static List<String> messageList = new ArrayList();
 	private static ObjectOutputStream messageListSend;
+
 	/**
-	 * 1. Send Server Logout status
-	 * <br/>2. Server Updates Connection status
-	 * <br/>3. Change Grid to Login Grid
+	 * 1. Send Server Logout status <br/>
+	 * 2. Server Updates Connection status <br/>
+	 * 3. Change Grid to Login Grid
 	 * 
 	 * @param logoutEvent
 	 */

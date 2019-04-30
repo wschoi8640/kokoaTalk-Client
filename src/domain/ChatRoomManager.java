@@ -41,13 +41,13 @@ import model.Model;
 import utils.AlertHandler;
 
 /**
- * This class consists ChatRoomService Panel and offers ChatRoomManage service 
+ * This class consists ChatRoomService Panel and offers ChatRoomManage service
  * 
  * @author wschoi8640
  * @version 1.0
  */
 public class ChatRoomManager extends VBox {
-	
+
 	private Model model;
 	private Button showUsrBtn;
 	private Button showChatBtn;
@@ -79,8 +79,9 @@ public class ChatRoomManager extends VBox {
 	private double btnWidth = 300;
 
 	/**
-	 * receive Primary Stage and Socket Object
-	 * <br/> consist Panel
+	 * receive Primary Stage and Socket Object <br/>
+	 * consist Panel
+	 * 
 	 * @param model
 	 */
 	public ChatRoomManager(Model model) {
@@ -90,12 +91,12 @@ public class ChatRoomManager extends VBox {
 	}
 
 	void initChatRoomManageGrid() {
-		// message List to send Server 
+		// message List to send Server
 		messageList = new ArrayList<String>();
-		
+
 		// user's Friend List
 		friendsList = new ArrayList<String>();
-		
+
 		// user's Chatroom List
 		chatroomList = new ArrayList<ArrayList<String>>();
 		openedChatroomList = new ArrayList<Stage>();
@@ -159,7 +160,7 @@ public class ChatRoomManager extends VBox {
 		funcGrid.add(addChatroomBtn, 0, 0);
 		funcGrid.add(rmvChatroomBtn, 1, 0);
 
-		// rcv ChatRoom List from Server 
+		// rcv ChatRoom List from Server
 		chatroomButtons = rcvChatrooms();
 		if (chatroomButtons == null)
 			chatroomButtons = new ArrayList<ToggleButton>();
@@ -212,11 +213,11 @@ public class ChatRoomManager extends VBox {
 	}
 
 	/**
-	 * Removes Selected Chatrooms from Grid
+	 * Removes Selected Chatrooms from Grid <br/>
 	 * <br/>
-	 * <br/>1. Make List from selected Chatrooms. 
-	 * <br/>2. Send Server key and List. 
-	 * <br/>3. Remove Selected Chatrooms by Server response.
+	 * 1. Make List from selected Chatrooms. <br/>
+	 * 2. Send Server key and List. <br/>
+	 * 3. Remove Selected Chatrooms by Server response.
 	 * 
 	 * @param removeEvent
 	 */
@@ -236,7 +237,7 @@ public class ChatRoomManager extends VBox {
 						messageListSend = model.getMessageListSend();
 						messageRcv = model.getMessageRcv();
 
-						// Add key and UserName and List to Msg List 
+						// Add key and UserName and List to Msg List
 						messageList.clear();
 						messageList.add(0, "rmv_chatroom");
 						messageList.add(1, model.getConnectedName());
@@ -282,11 +283,11 @@ public class ChatRoomManager extends VBox {
 	}
 
 	/**
-	 * Execute on OpenChat Btn Event
+	 * Execute on OpenChat Btn Event <br/>
 	 * <br/>
-	 * <br/>1. Count selected chatrooms
-	 * <br/>2. Alert if num of chatroom > 1
-	 * <br/>2. Open new Window and Add ChattingRoom Grid
+	 * 1. Count selected chatrooms <br/>
+	 * 2. Alert if num of chatroom > 1 <br/>
+	 * 2. Open new Window and Add ChattingRoom Grid
 	 * 
 	 * @param openEvent
 	 */
@@ -319,7 +320,7 @@ public class ChatRoomManager extends VBox {
 				}
 			}
 
-			// Create Chatting Room and Add to new Window 
+			// Create Chatting Room and Add to new Window
 			ChattingRoom chattingRoom = new ChattingRoom(model.getConnectedName(), selectedChatroom, model);
 
 			Stage stage = new Stage();
@@ -345,10 +346,10 @@ public class ChatRoomManager extends VBox {
 	}
 
 	/**
-	 * Receive user Chatrooms from Server
+	 * Receive user Chatrooms from Server <br/>
 	 * <br/>
-	 * <br/>1. Request Server User Chatroom List.
-	 * <br/>2. Change List into Buttons and return.
+	 * 1. Request Server User Chatroom List. <br/>
+	 * 2. Change List into Buttons and return.
 	 * 
 	 * @return List<Chatroom>
 	 */
@@ -376,7 +377,7 @@ public class ChatRoomManager extends VBox {
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 			}
-			
+
 			// make ChatRoomBtnList from response
 			if (messageList.get(0).equals(MsgKeys.ReceiveSuccess.getKey())) {
 				for (int i = 1; i < messageList.size(); i++) {
@@ -394,7 +395,7 @@ public class ChatRoomManager extends VBox {
 
 	/**
 	 * Add ChatRooms to ChatRooms Grid
-
+	 * 
 	 * @param chatButtons
 	 */
 	void addChatroomsToGrid(List<ToggleButton> chats) {
@@ -419,13 +420,13 @@ public class ChatRoomManager extends VBox {
 	}
 
 	/**
-	 * Execute On Add Chatroom Btn
+	 * Execute On Add Chatroom Btn <br/>
 	 * <br/>
-	 * <br/>1. make Friend List from user Friend List
-	 * <br/>2. make Blank List to show Selected Friends  
-	 * <br/>3. make Selected List editable
-	 * <br/>4. Add submit button and send selected List to server onsubmit 
-	 * <br/>5. If successful add Chatroom, If fails show result
+	 * 1. make Friend List from user Friend List <br/>
+	 * 2. make Blank List to show Selected Friends <br/>
+	 * 3. make Selected List editable <br/>
+	 * 4. Add submit button and send selected List to server onsubmit <br/>
+	 * 5. If successful add Chatroom, If fails show result
 	 * 
 	 * @param addEvent
 	 */
@@ -462,7 +463,7 @@ public class ChatRoomManager extends VBox {
 		chatroomGrid.add(selectedLbl, 2, 0);
 		GridPane.setHalignment(selectedLbl, HPos.CENTER);
 
-		// Add Friend List to ListView 
+		// Add Friend List to ListView
 		final ObservableList<String> candidates = FXCollections.observableArrayList(friendsList);
 		final ListView<String> candidatesListView = new ListView<>(candidates);
 		chatroomGrid.add(candidatesListView, 0, 1);
@@ -532,7 +533,7 @@ public class ChatRoomManager extends VBox {
 
 					// Add ChatRoom to Grid
 					addChatroomByResponse(selectedFriendList);
-					
+
 				} catch (IOException e1) {
 					e1.printStackTrace();
 				}
@@ -552,8 +553,8 @@ public class ChatRoomManager extends VBox {
 	}
 
 	/**
-	 * Add Chatroom to Chatroom Grid by Response
-	 * <br/> Add Chatroom if Response is Valid
+	 * Add Chatroom to Chatroom Grid by Response <br/>
+	 * Add Chatroom if Response is Valid
 	 * 
 	 * @param selectedList
 	 */
@@ -566,7 +567,7 @@ public class ChatRoomManager extends VBox {
 		try {
 			if ((line = messageRcv.readLine()) != null) {
 				if (line.substring(line.length() - key.length(), line.length()).equals(key)) {
-					
+
 					// Add new Chatroom to ChatroomList
 					chatroomList.add((ArrayList<String>) selectedList);
 					String buttonText = "";
@@ -597,7 +598,7 @@ public class ChatRoomManager extends VBox {
 	}
 
 	/**
-	 * Change to UserManager Grid 
+	 * Change to UserManager Grid
 	 * 
 	 * @param showUserEvent
 	 */

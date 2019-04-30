@@ -31,7 +31,7 @@ import model.Model;
 import utils.AlertHandler;
 
 /**
- * This class consists UserManage Panel and offers UserManage service 
+ * This class consists UserManage Panel and offers UserManage service
  * 
  * @author wschoi8640
  * @version 1.0
@@ -66,8 +66,9 @@ public class UserManager extends VBox {
 	private ObjectInputStream messageListRcv;
 
 	/**
-	 * receive Primary Stage and Socket Object
-	 * <br/> consist Panel
+	 * receive Primary Stage and Socket Object <br/>
+	 * consist Panel
+	 * 
 	 * @param model
 	 */
 	public UserManager(Model model) {
@@ -78,12 +79,11 @@ public class UserManager extends VBox {
 		initUserManageGrid();
 	}
 
-	
 	/**
 	 * consist user manage Grid
 	 */
 	void initUserManageGrid() {
-		// message List to send Server 
+		// message List to send Server
 		messageList = new ArrayList<String>();
 		// user's Friend List
 		friendsButtonList = new ArrayList<ToggleButton>();
@@ -134,14 +134,14 @@ public class UserManager extends VBox {
 		// btn for Logout
 		logoutBtn = new Button("Logout");
 		logoutBtn.setPrefSize(2 * btnWidth, btnHeight);
-		logoutBtn.setOnAction(e -> LogoutService.logout(e,model));
+		logoutBtn.setOnAction(e -> LogoutService.logout(e, model));
 
 		menuGrid.add(showUsrBtn, 0, 0);
 		menuGrid.add(showChatBtn, 1, 0);
 		funcGrid.add(addFriendBtn, 0, 0);
 		funcGrid.add(rmvFriendBtn, 1, 0);
 
-		// rcv FriendList from Server 
+		// rcv FriendList from Server
 		friendsButtonList = rcvFriendsList();
 		if (friendsButtonList == null)
 			friendsButtonList = new ArrayList<ToggleButton>();
@@ -209,17 +209,17 @@ public class UserManager extends VBox {
 	}
 
 	/**
-	 * Updates Friends Connection Status
+	 * Updates Friends Connection Status <br/>
 	 * <br/>
-	 * <br/>1. Request Server new Connection Status 
-	 * <br/>2. Receive Current Friend Status 
-	 * <br/>3. Update Grid by new Friend Status
+	 * 1. Request Server new Connection Status <br/>
+	 * 2. Receive Current Friend Status <br/>
+	 * 3. Update Grid by new Friend Status
 	 * 
 	 * @param refreshAction
 	 */
 	void refreshHandler(ActionEvent e) {
 		if (sock.isConnected()) {
-			// request when user has friend  
+			// request when user has friend
 			if (friendsButtonList.size() > 0) {
 				messageListSend = model.getMessageListSend();
 				messageList.clear();
@@ -281,8 +281,9 @@ public class UserManager extends VBox {
 			}
 		}
 	}
+
 	/**
-	 * Change to ChatRoomManager Grid 
+	 * Change to ChatRoomManager Grid
 	 * 
 	 * @param showChatEvent
 	 */
@@ -295,8 +296,9 @@ public class UserManager extends VBox {
 	}
 
 	/**
-	 * Add Friends to Friend Grid
-	 * <br/>grid size changes col length
+	 * Add Friends to Friend Grid <br/>
+	 * grid size changes col length
+	 * 
 	 * @param friendButtons
 	 * @param gridSize
 	 */
@@ -321,10 +323,10 @@ public class UserManager extends VBox {
 	}
 
 	/**
-	 * Receive user Friends from Server
+	 * Receive user Friends from Server <br/>
 	 * <br/>
-	 * <br/>1. Request Server User Friend List.
-	 * <br/>2. Change List into Buttons and return.
+	 * 1. Request Server User Friend List. <br/>
+	 * 2. Change List into Buttons and return.
 	 * 
 	 * @return List<Friends>
 	 */
@@ -369,13 +371,12 @@ public class UserManager extends VBox {
 		return null;
 	}
 
-
 	/**
-	 * Removes Selected Friends from Grid
+	 * Removes Selected Friends from Grid <br/>
 	 * <br/>
-	 * <br/>1. Make List from selected Friends. 
-	 * <br/>2. Send Server key and List. 
-	 * <br/>3. Remove Selected Friends by Server response.
+	 * 1. Make List from selected Friends. <br/>
+	 * 2. Send Server key and List. <br/>
+	 * 3. Remove Selected Friends by Server response.
 	 * 
 	 * @param removeEvent
 	 */
@@ -388,14 +389,14 @@ public class UserManager extends VBox {
 				if (friend.isSelected())
 					rmvFriendsList.add(friend.getText());
 			}
-			
+
 			// Send Server when having any Selected Friends
 			if (!rmvFriendsList.isEmpty()) {
 				try {
 					if (sock.isConnected()) {
 						messageListSend = model.getMessageListSend();
 
-						// Add key and UserName and List to Msg List 
+						// Add key and UserName and List to Msg List
 						messageList.clear();
 						messageList.add(0, MsgKeys.RemoveRequest.getKey());
 						messageList.add(1, model.getConnectedName());
@@ -441,13 +442,13 @@ public class UserManager extends VBox {
 	}
 
 	/**
-	 * Add new Friend to Grid
+	 * Add new Friend to Grid <br/>
 	 * <br/>
-	 * <br/>1. Read ID of new Friend
-	 * <br/>2. Check if ID is User's and if field is blank 
-	 * <br/>3. Send Server Request to add Friend
-	 * <br/>4. Receive Server Response 
-	 * <br/>5. Show Result (Success/Already added/No Such ID)
+	 * 1. Read ID of new Friend <br/>
+	 * 2. Check if ID is User's and if field is blank <br/>
+	 * 3. Send Server Request to add Friend <br/>
+	 * 4. Receive Server Response <br/>
+	 * 5. Show Result (Success/Already added/No Such ID)
 	 * 
 	 * @param addEvent
 	 */
@@ -493,7 +494,8 @@ public class UserManager extends VBox {
 
 						if ((message = messageRcv.readLine()) != null) {
 							// Add Friend Successful
-							if (message.substring(0, 3).equals(MsgKeys.AddSuccess.getKey()) || message.substring(0, 4).equals("yadd")) {
+							if (message.substring(0, 3).equals(MsgKeys.AddSuccess.getKey())
+									|| message.substring(0, 4).equals("yadd")) {
 								if (message.substring(0, 1).equals("y"))
 									friend = message.substring(5, message.length());
 								else
