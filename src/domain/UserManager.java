@@ -134,7 +134,7 @@ public class UserManager extends VBox {
 		// btn for Logout
 		logoutBtn = new Button("Logout");
 		logoutBtn.setPrefSize(2 * btnWidth, btnHeight);
-		logoutBtn.setOnAction(e -> logoutHandler(e));
+		logoutBtn.setOnAction(e -> LogoutService.logout(e,model));
 
 		menuGrid.add(showUsrBtn, 0, 0);
 		menuGrid.add(showChatBtn, 1, 0);
@@ -369,27 +369,6 @@ public class UserManager extends VBox {
 		return null;
 	}
 
-	/**
-	 * 1. Send Server Logout status
-	 * <br/>2. Server Updates Connection status
-	 * <br/>3. Change Grid to Login Grid
-	 * 
-	 * @param logoutEvent
-	 */
-	void logoutHandler(ActionEvent e) {
-		try {
-			messageList.clear();
-			messageList.add("do_logout");
-			messageList.add(model.getConnectedName());
-			messageListSend.writeObject(messageList);
-			messageListSend.flush();
-			messageListSend.reset();
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
-		model.getLoginService().getChildren().clear();
-		model.getLoginService().getChildren().addAll(model.getTitleLabel(), model.getLoginGrid());
-	}
 
 	/**
 	 * Removes Selected Friends from Grid
