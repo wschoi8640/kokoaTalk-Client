@@ -10,7 +10,7 @@ import java.net.Socket;
 import java.util.List;
 
 import domain.ChatRoomService;
-import domain.ChatUserSevice;
+import domain.UserManageService;
 import domain.ChattingRoom;
 import domain.JoinService;
 import domain.LoginService;
@@ -23,7 +23,7 @@ public class Model {
 	private ChattingRoom chattingRoom;
 	private JoinService joinService;
 	private LoginService loginService;
-	private ChatUserSevice chatUserService;
+	private UserManageService chatUserService;
 	private ChatRoomService chatRoomService;
 	private Socket sock;
 	private ObjectInputStream messageListRcv;
@@ -53,10 +53,10 @@ public class Model {
 	public void setLoginService(LoginService loginService) {
 		this.loginService = loginService;
 	}
-	public ChatUserSevice getChatUserService() {
+	public UserManageService getChatUserService() {
 		return chatUserService;
 	}
-	public void setChatUserService(ChatUserSevice chatUserService) {
+	public void setChatUserService(UserManageService chatUserService) {
 		this.chatUserService = chatUserService;
 	}
 	public ChatRoomService getChatRoomService() {

@@ -1,6 +1,7 @@
 package enums;
 
 public enum ClientSettings {
+	ConnectedFriendColor("-fx-background-color: Yellow"),
 	Font("Consolas"),
 	LoginServerPort(10001),
 	ServerIP("192.168.0.154"),

@@ -1,10 +1,18 @@
 package enums;
 
 public enum MsgKeys {
+	AddFailByDupli("friend_exists"),
+	AddFailByID("no_such_user"),
+	AddSuccess("add"),
+	AddRequest("add_friend"),
+	RemoveSuccess("rmv_ok"),
+	RemoveRequest("rmv_friend"),
+	RefreshSuccess("refresh_ok"),
+	RefreshRequest("do_refresh"),
 	LogoutRequest("do_logout"),
 	LoginFailByID("no_id"),
 	LoginFailByPW("wrong_pw"),
-	LoginResponse("hello"),
+	LoginSuccess("hello"),
 	LoginRequest("do_login");
 	
 	String key;

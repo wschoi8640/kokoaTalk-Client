@@ -44,7 +44,7 @@ import model.Model;
 public class LoginService extends VBox {
 	public Stage parentStage;
 	private Model model;
-	private ChatUserSevice chatUserService;
+	private UserManageService chatUserService;
 	private JoinService joinService;
 	private BufferedReader messageRcv;
 	private ObjectOutputStream messageListSender;
@@ -203,7 +203,7 @@ public class LoginService extends VBox {
 				responseMsg = messageRcv.readLine();
 
 				// Login Successful
-				if (responseMsg.substring(0, 5).equals(MsgKeys.LoginResponse.getKey()) || responseMsg.substring(0, 5).equals("yhell")) {
+				if (responseMsg.substring(0, 5).equals(MsgKeys.LoginSuccess.getKey()) || responseMsg.substring(0, 5).equals("yhell")) {
 					alertHandler(AlertMsgs.LoginSuccess.getMsg());
 
 					// Save user Data
@@ -214,7 +214,7 @@ public class LoginService extends VBox {
 					model.setLoginService(this);
 					
 					// Change to ChatUser Grid 
-					chatUserService = new ChatUserSevice(model);
+					chatUserService = new UserManageService(model);
 					this.getChildren().clear();
 					this.getChildren().add(chatUserService);
 					return;

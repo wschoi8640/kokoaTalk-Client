@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import enums.ClientSettings;
+import enums.MsgKeys;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -27,9 +29,12 @@ import javafx.stage.Stage;
 import model.Model;
 
 /**
- * 이 클래스는 사용자의 친구 목록을 구성하고 추가,삭제할 수 있도록 한다.
+ * This class consists UserManage Panel and offers UserManage service 
+ * 
+ * @author wschoi8640
+ * @version 1.0
  */
-public class ChatUserSevice extends VBox {
+public class UserManageService extends VBox {
 	private Model model;
 	private LoginService loginService;
 	private Button refreshBtn;
@@ -58,64 +63,73 @@ public class ChatUserSevice extends VBox {
 	private ObjectOutputStream messageListSend;
 	private ObjectInputStream messageListRcv;
 
-	// 최상위 스테이지와 연결된 소켓을 불러온 후 화면 구성
-	public ChatUserSevice(Model echoModel) {
-		this.model = echoModel;
-		this.loginService = echoModel.getLoginService();
-		this.sock = echoModel.getSock();
-		echoModel.setChatUserService(this);
-		initialize();
+	/**
+	 * receive Primary Stage and Socket Object
+	 * <br/> consist Panel
+	 * @param model
+	 */
+	public UserManageService(Model model) {
+		this.model = model;
+		this.loginService = model.getLoginService();
+		this.sock = model.getSock();
+		model.setChatUserService(this);
+		makeUserManageGrid();
 	}
 
-	void initialize() {
+	
+	/**
+	 * consist user manage Grid
+	 */
+	void makeUserManageGrid() {
+		// message List to send Server 
 		messageList = new ArrayList<String>();
-		// 친구 목록 리스트
+		// user's Friend List
 		friendsButtonList = new ArrayList<ToggleButton>();
 
-		// 메뉴 역할을 하는 Grid
+		// Menu Grid
 		menuGrid = new GridPane();
 		menuGrid.setVgap(15);
 
-		// 친구 목록이 표시될 Grid
+		// Friend Grid
 		friendGrid = new GridPane();
 		friendGrid.setPrefSize(600, 550);
 		friendGrid.setHgap(15);
 		friendGrid.setVgap(15);
 
-		// 추가 삭제 기능이 표시될 Grid
+		// add / rmv Util Grid
 		funcGrid = new GridPane();
 		funcGrid.setVgap(15);
 
-		// 현재 사용자의 이름을 화면에 표시
+		// shows current User Name
 		userNameLabel = new Label(model.getConnectedName());
 		userNameLabel.setFont(new Font("Consolas", 30.0));
 		userNameLabel.setPrefHeight(btnHeight);
 
-		// 친구 목록 보기 버튼
+		// btn for Changing Grid(show Friends)
 		showUsrBtn = new Button("Show Friends");
 		showUsrBtn.setPrefSize(btnWidth, btnHeight);
 
-		// 채팅방 목록 보기 버튼
+		// btn for Changing Grid(show Chat rooms)
 		showChatBtn = new Button("Show Chat Rooms");
 		showChatBtn.setPrefSize(btnWidth, btnHeight);
 		showChatBtn.setOnAction(e -> showChatHandler(e));
 
-		// 접속 상태 불러오기 버튼
+		// btn for Update Connection Status
 		refreshBtn = new Button("Refresh Status");
 		refreshBtn.setPrefSize(2 * btnWidth, btnHeight);
 		refreshBtn.setOnAction(e -> refreshHandler(e));
 
-		// 친구 추가 버튼
+		// btn for Adding Friend
 		addFriendBtn = new Button("Add Friend");
 		addFriendBtn.setPrefSize(btnWidth, btnHeight);
 		addFriendBtn.setOnAction(e -> addFriendHandler(e));
 
-		// 친구 삭제 버튼
+		// btn for Removing Friend
 		rmvFriendBtn = new Button("Remove Friend");
 		rmvFriendBtn.setPrefSize(btnWidth, btnHeight);
 		rmvFriendBtn.setOnAction(e -> rmvFriendHandler(e));
 
-		// 로그아웃 버튼
+		// btn for Logout
 		logoutBtn = new Button("Logout");
 		logoutBtn.setPrefSize(2 * btnWidth, btnHeight);
 		logoutBtn.setOnAction(e -> logoutHandler(e));
@@ -125,21 +139,21 @@ public class ChatUserSevice extends VBox {
 		funcGrid.add(addFriendBtn, 0, 0);
 		funcGrid.add(rmvFriendBtn, 1, 0);
 
-		// 서버에서 친구목록을 불러와 저장
+		// rcv FriendList from Server 
 		friendsButtonList = rcvFriendsList();
 		if (friendsButtonList == null)
 			friendsButtonList = new ArrayList<ToggleButton>();
 
-		// 친구목록을 Grid에 추가
+		// add Friends to FriendGrid
 		addFriendsToGrid(friendsButtonList, curGridSize);
 
-		// 친구목록 Grid에 Scroll 추가
+		// Add Scroll to Grid
 		scrollPane = new ScrollPane(friendGrid);
 		scrollPane.setStyle("-fx-background-color:transparent;");
 		scrollPane.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
 		scrollPane.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
 
-		// 창크기가 변경될 때마다 버튼이나,Grid의 크기도 변경될 수 있도록 설정
+		// Set Auto Change by Panel size changes
 		model.getLoginService().widthProperty().addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> observableValue, Number oldSceneWidth,
@@ -162,39 +176,52 @@ public class ChatUserSevice extends VBox {
 
 	}
 
-	protected void setHeightProperty(Number newSceneHeight) {
-		friendGrid.setPrefHeight(newSceneHeight.doubleValue() * 5.5 / 7);
-		showUsrBtn.setPrefHeight(newSceneHeight.doubleValue() / 14);
-		showChatBtn.setPrefHeight(newSceneHeight.doubleValue() / 14);
-		userNameLabel.setPrefHeight(newSceneHeight.doubleValue() / 14);
-	}
-
-	protected void setWidthProperty(Number newSceneWidth, Number oldSceneWidth) {
-		friendGrid.setPrefWidth(newSceneWidth.doubleValue());
-		friendGrid.getChildren().clear();
-		curGridSize = curGridSize * newSceneWidth.doubleValue() / oldSceneWidth.doubleValue();
-		addFriendsToGrid(friendsButtonList, curGridSize);
-		showUsrBtn.setPrefWidth(newSceneWidth.doubleValue() / 2);
-		showChatBtn.setPrefWidth(newSceneWidth.doubleValue() / 2);
-		addFriendBtn.setPrefWidth(newSceneWidth.doubleValue() / 2);
-		rmvFriendBtn.setPrefWidth(newSceneWidth.doubleValue() / 2);
-		logoutBtn.setPrefWidth(newSceneWidth.doubleValue());
-		refreshBtn.setPrefWidth(newSceneWidth.doubleValue());
+	/**
+	 * set Height of inner Children by Panel Height Change
+	 * 
+	 * @param panelHeight
+	 */
+	protected void setHeightProperty(Number panelHeight) {
+		friendGrid.setPrefHeight(panelHeight.doubleValue() * 5.5 / 7);
+		showUsrBtn.setPrefHeight(panelHeight.doubleValue() / 14);
+		showChatBtn.setPrefHeight(panelHeight.doubleValue() / 14);
+		userNameLabel.setPrefHeight(panelHeight.doubleValue() / 14);
 	}
 
 	/**
-	 * 친구들의 접속상태를 갱신해주는 메소드
+	 * set Width of inner Children by Panel Width Change
 	 * 
-	 * 1. 서버에 갱신 요청과 친구 목록을 보낸다. 2. 서버에서 돌아온 친구 목록을 받아온다. 3. 받아온 목록을 바탕으로 로그인 한 사람
-	 * 로그아웃 한 사람을 표시한다.
+	 * @param panelWidth
+	 */
+	protected void setWidthProperty(Number newPanelWidth, Number oldPanelWidth) {
+		friendGrid.setPrefWidth(newPanelWidth.doubleValue());
+		friendGrid.getChildren().clear();
+		curGridSize = curGridSize * newPanelWidth.doubleValue() / oldPanelWidth.doubleValue();
+		addFriendsToGrid(friendsButtonList, curGridSize);
+		showUsrBtn.setPrefWidth(newPanelWidth.doubleValue() / 2);
+		showChatBtn.setPrefWidth(newPanelWidth.doubleValue() / 2);
+		addFriendBtn.setPrefWidth(newPanelWidth.doubleValue() / 2);
+		rmvFriendBtn.setPrefWidth(newPanelWidth.doubleValue() / 2);
+		logoutBtn.setPrefWidth(newPanelWidth.doubleValue());
+		refreshBtn.setPrefWidth(newPanelWidth.doubleValue());
+	}
+
+	/**
+	 * Updates Friends Connection Status
+	 * <br/>
+	 * <br/>1. Request Server new Connection Status 
+	 * <br/>2. Receive Current Friend Status 
+	 * <br/>3. Update Grid by new Friend Status
+	 * 
+	 * @param refreshAction
 	 */
 	void refreshHandler(ActionEvent e) {
 		if (sock.isConnected()) {
-			// 친구가 있는 경우 갱신 요청은 보냄
+			// request when user has friend  
 			if (friendsButtonList.size() > 0) {
 				messageListSend = model.getMessageListSend();
 				messageList.clear();
-				messageList.add("do_refresh");
+				messageList.add(MsgKeys.RefreshRequest.getKey());
 				try {
 					messageListSend.writeObject(messageList);
 					messageListSend.flush();
@@ -206,38 +233,39 @@ public class ChatUserSevice extends VBox {
 					e1.printStackTrace();
 				}
 
-				// 정상적인 응답 도착시 상태 갱신
-				if (messageList.get(0).equals("refresh_ok")) {
-					// 접속중으로 변경하기 위한 리스트
+				// Request successful
+				if (messageList.get(0).equals(MsgKeys.RefreshSuccess.getKey())) {
+					// for Merge Connected Friends
 					List<ToggleButton> tempList = new ArrayList<ToggleButton>();
-					// 로그아웃으로 변경하기 위한 리스트
+					// for Merge Not Connected Friends
 					List<ToggleButton> tempList2 = new ArrayList<ToggleButton>();
 					tempList.addAll(friendsButtonList);
 					tempList2.addAll(friendsButtonList);
 
-					// 현채 친구 목록과 도착한 친구 목록을 비교함
+					// Merge Connected Friends
 					for (ToggleButton friendButton : friendsButtonList) {
 						for (String connectedFriend : messageList) {
-							if (connectedFriend.equals("refresh_ok"))
+							if (connectedFriend.equals(MsgKeys.RefreshSuccess.getKey()))
 								continue;
-							// 일치할 시 두 리스트의 내용을 변경
+							// Check if Friend exists
 							if (friendButton.getText().equals(connectedFriend)) {
-								// 리스트 갱신
-								friendButton.setStyle("-fx-background-color: Yellow");
-								// 버튼  새로고침
+								// Update Color
+								friendButton.setStyle(ClientSettings.ConnectedFriendColor.getSetting());
+								// Apply new Style
 								tempList.remove(friendButton);
 								tempList.add(friendButton);
-								// 리스트에서 일치하는 친구 삭제
+								// Rmv Connected Friend
 								tempList2.remove(friendButton);
 							}
 						}
 					}
 
-					// 로그아웃 한 친구인 경우,버튼색 초기화
+					// Update Color of Disconnected Friends
 					for (ToggleButton friendButton : friendsButtonList) {
 						if (tempList2.contains(friendButton)) {
+							// Update Color
 							friendButton.setStyle(null);
-							// 버튼 새로고침
+							// Apply new Style
 							tempList.remove(friendButton);
 							tempList.add(friendButton);
 						}
@@ -251,19 +279,25 @@ public class ChatUserSevice extends VBox {
 			}
 		}
 	}
-
-	// 채팅방 목록을 불러오는 메소드
+	/**
+	 * Change to ChatRoomService Grid 
+	 * 
+	 * @param showChatEvent
+	 */
 	void showChatHandler(ActionEvent e) {
-		// 채팅방 목록을 구성하는 클래스를 호출 후,추가
+		// Add ChatRoomService Panel to Primary Stage and save it for later
 		ChatRoomService chatRoomService = new ChatRoomService(model);
 		model.setChatRoomService(chatRoomService);
 		model.getLoginService().getChildren().clear();
 		model.getLoginService().getChildren().add(chatRoomService);
-		return;
 	}
 
-	// Grid에 친구 버튼을 추가해주는 메소드
-	// 현재 창 크기에 따라서 배열 방식이 달라짐
+	/**
+	 * Add Friends to Friend Grid
+	 * <br/>grid size changes col length
+	 * @param friendButtons
+	 * @param gridSize
+	 */
 	private void addFriendsToGrid(List<ToggleButton> friendButtons, double gridSize) {
 		gridX = 0;
 		gridY = 0;
@@ -279,16 +313,18 @@ public class ChatUserSevice extends VBox {
 				}
 			}
 		}
-		// 추후에 사용하기 위해서 저장
+		// save modifications
 		model.setFriendGrid(friendGrid);
 		model.setFriendsList(friendsButtonList);
 	}
 
 	/**
-	 * 서버에서 친구목록을 받아오는 메소드
+	 * Receive user Friends from Server
+	 * <br/>
+	 * <br/>1. Request Server User Friend List.
+	 * <br/>2. Change List into Buttons and return.
 	 * 
-	 * 1. 친구목록을 서버에 요청한다. 2. 친구목록이 서버로 부터 돌아오면 이를 버튼으로 만들어 반환한다.
-	 * 
+	 * @return List<Friends>
 	 */
 	private List<ToggleButton> rcvFriendsList() {
 		try {
@@ -298,18 +334,19 @@ public class ChatUserSevice extends VBox {
 				messageListSend = model.getMessageListSend();
 				messageListRcv = model.getMessageListRcv();
 
-				// 요청 메시지와 현재 사용자 이름을 전송 리스트에 담음
+				// Add Key and UserName to Msg List
 				messageList.add(0, "rcv_friends");
 				messageList.add(1, model.getConnectedName());
 
-				// 친구 목록 요청을 전송
+				// Send Request to Server
 				messageListSend.writeObject(messageList);
 				messageListSend.flush();
 				messageListSend.reset();
 
+				// rcv Server response
 				messageList = (ArrayList<String>) messageListRcv.readObject();
 
-				// 친구 목록이 도착할 시,버튼 리스트으로 만들어 반환한다.
+				// make FriendBtnList from response
 				if (messageList.get(0).equals("rcv_ok")) {
 					for (int i = 1; i < messageList.size(); i++) {
 						tmpFriend = new ToggleButton(messageList.get(i));
@@ -331,9 +368,11 @@ public class ChatUserSevice extends VBox {
 	}
 
 	/**
-	 * 로그아웃 버튼을 누르면 실행되는 메소드
+	 * 1. Send Server Logout status
+	 * <br/>2. Server Updates Connection status
+	 * <br/>3. Change Grid to Login Grid
 	 * 
-	 * 로그인 화면으로 돌아가되 상태 갱신을 위해 서버에 알려줌
+	 * @param logoutEvent
 	 */
 	void logoutHandler(ActionEvent e) {
 		try {
@@ -351,49 +390,61 @@ public class ChatUserSevice extends VBox {
 	}
 
 	/**
-	 * 친구 삭제 버튼을 누르면 실행되는 메소드
+	 * Removes Selected Friends from Grid
+	 * <br/>
+	 * <br/>1. Make List from selected Friends. 
+	 * <br/>2. Send Server key and List. 
+	 * <br/>3. Remove Selected Friends by Server response.
 	 * 
-	 * 1. 삭제를 위해 선택된 버튼들로 리스트를 구성한다. 2. 서버에 요청과 함께 삭제 리스트도 전송한다. 3. 서버에서 응답이 돌아오면
-	 * 클라이언트 상에서 삭제한다.
+	 * @param removeEvent
 	 */
 	void rmvFriendHandler(ActionEvent e) {
+		// Remove when having any Friend
 		if (!friendsButtonList.isEmpty()) {
 			List<String> rmvFriendsList = new ArrayList<String>();
+			// Add Selected Friends to Remove List
 			for (ToggleButton friend : friendsButtonList) {
 				if (friend.isSelected())
 					rmvFriendsList.add(friend.getText());
 			}
+			
+			// Send Server when having any Selected Friends
 			if (!rmvFriendsList.isEmpty()) {
 				try {
 					if (sock.isConnected()) {
 						messageListSend = model.getMessageListSend();
-						messageRcv = model.getMessageRcv();
 
+						// Add key and UserName and List to Msg List 
 						messageList.clear();
-						messageList.add(0, "rmv_friend");
+						messageList.add(0, MsgKeys.RemoveRequest.getKey());
 						messageList.add(1, model.getConnectedName());
-
 						for (String rmvFriend : rmvFriendsList) {
 							messageList.add(rmvFriend);
 						}
 
+						// Send Server Msg
 						messageListSend.writeObject(messageList);
 						messageListSend.flush();
 						messageListSend.reset();
 						messageList.clear();
 
+						// Receive Server Response
+						messageRcv = model.getMessageRcv();
 						if ((message = messageRcv.readLine()) != null) {
-							if (message.equals("yrmv_ok") || message.equals("rmv_ok")) {
+							if (message.equals(MsgKeys.RemoveSuccess.getKey()) || message.equals("yrmv_ok")) {
 								List<ToggleButton> tempList = new ArrayList<ToggleButton>();
 								tempList.addAll(friendsButtonList);
+								// Remove Selected Friends from Friend List
 								for (ToggleButton myFriend : tempList) {
 									for (String rmvFriend : rmvFriendsList) {
 										if (myFriend.getText().equals(rmvFriend))
 											friendsButtonList.remove(myFriend);
 									}
 								}
+								// Update Grid
 								friendGrid.getChildren().clear();
 								addFriendsToGrid(friendsButtonList, curGridSize);
+								// Save Modification
 								model.setFriendGrid(friendGrid);
 								model.setFriendsList(friendsButtonList);
 							}
@@ -408,13 +459,18 @@ public class ChatUserSevice extends VBox {
 	}
 
 	/**
-	 * 친구 추가 버튼을 누르면 실행되는 메소드
+	 * Add new Friend to Grid
+	 * <br/>
+	 * <br/>1. Read ID of new Friend
+	 * <br/>2. Check if ID is User's and if field is blank 
+	 * <br/>3. Send Server Request to add Friend
+	 * <br/>4. Receive Server Response 
+	 * <br/>5. Show Result (Success/Already added/No Such ID)
 	 * 
-	 * 1. 필드가 비어있는지,자기자신인지 여부를 체크한다. 2. 입력된 친구를 요청과 함께 서버로 전송한다. 3. 서버에서 돌아온 응답에 맞게
-	 * 사용자에게 보여준다. - 성공시 친구버튼 추가 - 이미 친구이거나,존재하지 않는 사용자일 경우 메시지로 표시)
+	 * @param addEvent
 	 */
 	void addFriendHandler(ActionEvent e) {
-		// 추가할 친구의 ID를 입력 받기
+		// Read Friend ID
 		TextInputDialog dialog = new TextInputDialog("Insert Friend's ID");
 
 		dialog.setTitle("Add New Friend");
@@ -424,16 +480,18 @@ public class ChatUserSevice extends VBox {
 		if (result.isPresent()) {
 			String friend = result.get();
 
-			// 필드가 비어있는지 확인
+			// Check if Field is blank
 			if (friend.equals("Insert Friend's ID")) {
 				loginService.alertHandler("Nothing Inserted!");
 				addFriendHandler(e);
+				return;
 			}
 
-			// 사용자 자신인지 확인
+			// Check if ID is User's
 			if (friend.equals(model.getConnectedID())) {
 				loginService.alertHandler("Cannot add Yourself!");
 				addFriendHandler(e);
+				return;
 			} else {
 				try {
 					if (sock.isConnected()) {
@@ -441,8 +499,8 @@ public class ChatUserSevice extends VBox {
 						messageListSend = model.getMessageListSend();
 						messageRcv = model.getMessageRcv();
 
-						// 서버에 요청과 추가할 친구 전송
-						messageList.add(0, "add_friend");
+						// Add Key and Friend to Msg List
+						messageList.add(0, MsgKeys.AddRequest.getKey());
 						messageList.add(1, model.getConnectedName());
 						messageList.add(2, friend);
 
@@ -452,23 +510,23 @@ public class ChatUserSevice extends VBox {
 						messageList.clear();
 
 						if ((message = messageRcv.readLine()) != null) {
-							// 친구 추가에 성공한 경우
-							if (message.substring(0, 4).equals("yadd") || message.substring(0, 3).equals("add")) {
+							// Add Friend Successful
+							if (message.substring(0, 3).equals(MsgKeys.AddSuccess.getKey()) || message.substring(0, 4).equals("yadd")) {
 								if (message.substring(0, 1).equals("y"))
 									friend = message.substring(5, message.length());
 								else
 									friend = message.substring(4, message.length());
 
-								// 해당 친구를 친구 목록에 추가
+								// make new Friend Button
 								tmpFriend = new ToggleButton(friend);
 								tmpFriend.setShape(new Circle(10));
 								tmpFriend.setPrefSize(btnHeight * 2, btnHeight * 2);
 
-								// 친구 목록 Grid 갱신
+								// Add Friend to Friend Grid
 								friendsButtonList.add(tmpFriend);
 								friendGrid.add(tmpFriend, gridX, gridY);
 
-								if (gridX > 4) {
+								if (gridX > curGridSize) {
 									gridY++;
 									gridX = 0;
 								} else {
@@ -477,14 +535,14 @@ public class ChatUserSevice extends VBox {
 								return;
 							}
 
-							// 존재하지 않는 사용자인 경우
-							if (message.equals("yno_such_user") || message.equals("no_such_user")) {
+							// When such id not Exist
+							if (message.equals(MsgKeys.AddFailByID.getKey()) || message.equals("yno_such_user")) {
 								loginService.alertHandler("No such User!");
 								addFriendHandler(e);
 							}
 
-							// 이미 추가한 친구인 경우
-							if (message.equals("yfriend_exists") || message.equals("friend_exists")) {
+							// When Already added Friend
+							if (message.equals(MsgKeys.AddFailByDupli.getKey()) || message.equals("yfriend_exists")) {
 								loginService.alertHandler("Already Added!");
 								addFriendHandler(e);
 							}
