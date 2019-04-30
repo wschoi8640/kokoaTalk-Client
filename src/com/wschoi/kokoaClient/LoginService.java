@@ -56,8 +56,6 @@ public class LoginService extends VBox {
 	private String userID;
 	private String userPW;
 	private Socket sock;
-	private String serverIP = "192.168.0.43";
-	private int serverPort = 10001;
 
 	/**
 	 * Consist Panel and Connect to Server
@@ -83,8 +81,8 @@ public class LoginService extends VBox {
 		loginGrid.setVgap(15);
 
 		// Title for Grid
-		titleLabel = new Label("KokoaTalk");
-		titleLabel.setFont(new Font("Consolas", 30.0));
+		titleLabel = new Label(ClientSettings.Title.getSetting());
+		titleLabel.setFont(new Font(ClientSettings.Font.getSetting(), 30.0));
 
 		// ID field
 		idField = new TextField();
@@ -132,7 +130,7 @@ public class LoginService extends VBox {
 	 */
 	void connectToServer() {
 		try {
-			sock = new Socket(serverIP, serverPort);
+			sock = new Socket(ClientSettings.ServerIP.getSetting(), ClientSettings.LoginServerPort.getNum());
 
 			InputStream in = sock.getInputStream();
 			OutputStream out = sock.getOutputStream();
@@ -166,11 +164,11 @@ public class LoginService extends VBox {
 		
 		// Check if ID, PW field is blank 
 		if (idField.getText().trim().isEmpty()) {
-			alertHandler("Enter User ID!");
+			alertHandler(AlertMsgs.BlankIdField.getMsg());
 			return;
 		}
 		if (pwField.getText().trim().isEmpty()) {
-			alertHandler("Enter User Password!");
+			alertHandler(AlertMsgs.BlankPWField.getMsg());
 			return;
 		}
 
@@ -202,7 +200,7 @@ public class LoginService extends VBox {
 
 				// Login Successful
 				if (responseMsg.substring(0, 5).equals("hello") || responseMsg.substring(0, 5).equals("yhell")) {
-					alertHandler("Login Success!");
+					alertHandler(AlertMsgs.LoginSuccess.getMsg());
 
 					// Save user Data
 					model.setConnectedName(responseMsg.substring(6, responseMsg.length()));
@@ -222,7 +220,7 @@ public class LoginService extends VBox {
 				if (responseMsg.equals("wrong_pw")) {
 					// Empty Password Field and Alert
 					pwField.setText("");
-					alertHandler("Wrong Password!");
+					alertHandler(AlertMsgs.WrongPassword.getMsg());
 					return;
 				}
 
@@ -231,7 +229,7 @@ public class LoginService extends VBox {
 					// Empty Both Fields and Alert
 					idField.setText("");
 					pwField.setText("");
-					alertHandler("No Such ID exists!");
+					alertHandler(AlertMsgs.NoSuchID.getMsg());
 					return;
 				}
 			} catch (IOException e) {

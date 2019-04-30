@@ -4,8 +4,12 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-/*
- * 이 클래스는 채팅 클라이언트의 첫 화면인 로그인 화면을 띄운다.
+/**
+ * Main Class for KokoaClient
+ * <br/>Creates Primary Stage and Adds Login Panel
+ * 
+ * @author wschoi8640
+ * @version 1.0
  */
 public class ChatMain extends Application
 {
@@ -17,18 +21,19 @@ public class ChatMain extends Application
 		@Override
 		public void start(Stage primaryStage) throws Exception 
 		{
-				//Getter and Setter 클래스 생성
+				// Class for saving Values
 				Model model = new Model(); 
 				
-				//Login 클래스 생성 및 실행
+				// Call Class for Login
 				LoginService loginService = new LoginService(model);
 				model.setLoginService(loginService);
 				loginService.parentStage = primaryStage;
 				
+				// Add Login Panel to Primary Stage
 				Scene scene = new Scene(loginService,600,700);
 				
 				primaryStage.setOnCloseRequest(e-> loginService.closeHandler(e));
-				primaryStage.setTitle("KokoaTalk");
+				primaryStage.setTitle(ClientSettings.Title.getSetting());
 				primaryStage.setScene(scene);
 				primaryStage.show();
 		}
