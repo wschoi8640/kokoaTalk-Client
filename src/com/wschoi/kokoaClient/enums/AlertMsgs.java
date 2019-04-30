@@ -1,4 +1,4 @@
-package com.wschoi.kokoaClient;
+package com.wschoi.kokoaClient.enums;
 
 public enum AlertMsgs {
 	NoSuchID("No Such ID exists!"),
@@ -11,7 +11,7 @@ public enum AlertMsgs {
 	AlertMsgs(String msg){
 		this.msg = msg;
 	}
-	String getMsg(){
+	public String getMsg(){
 		return msg;
 	}
 }

@@ -13,6 +13,10 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.wschoi.kokoaClient.enums.AlertMsgs;
+import com.wschoi.kokoaClient.enums.ClientSettings;
+import com.wschoi.kokoaClient.enums.MsgKeys;
+
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.geometry.Point2D;

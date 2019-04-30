@@ -1,4 +1,4 @@
-package com.wschoi.kokoaClient;
+package com.wschoi.kokoaClient.enums;
 
 public enum ClientSettings {
 	Font("Consolas"),
@@ -13,10 +13,10 @@ public enum ClientSettings {
 	ClientSettings(int num){
 		this.num = num;
 	}
-	String getSetting(){
+	public String getSetting(){
 		return setting;
 	}
-	int getNum() {
+	public int getNum() {
 		return num;
 	}
 }
