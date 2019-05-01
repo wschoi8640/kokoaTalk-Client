@@ -252,26 +252,28 @@ public class ChatRoomManager extends VBox {
 						messageList.clear();
 
 						// Receive Server Response
-						String message;
-						if ((message = messageRcv.readLine()) != null) {
-							// Remove Successful
-							if (message.equals(MsgKeys.RemoveSuccess.getKey()) || message.equals("yrmv_ok")) {
-								List<ToggleButton> tempList = new ArrayList<ToggleButton>();
-								tempList.addAll(chatroomButtons);
-								// Remove Selected Chatrooms from Chatroom List
-								for (ToggleButton myChatrooms : tempList) {
-									for (String rmvChatroom : rmvChatroomsList) {
-										if (myChatrooms.getText().equals(rmvChatroom))
-											chatroomButtons.remove(myChatrooms);
-									}
+						String message = null;
+						// Wait for response
+						while (message == null) {
+							message = messageRcv.readLine();
+						}
+						// Remove Successful
+						if (message.equals(MsgKeys.RemoveSuccess.getKey()) || message.equals("yrmv_ok")) {
+							List<ToggleButton> tempList = new ArrayList<ToggleButton>();
+							tempList.addAll(chatroomButtons);
+							// Remove Selected Chatrooms from Chatroom List
+							for (ToggleButton myChatrooms : tempList) {
+								for (String rmvChatroom : rmvChatroomsList) {
+									if (myChatrooms.getText().equals(rmvChatroom))
+										chatroomButtons.remove(myChatrooms);
 								}
-								// Update Grid
-								chatroomGrid.getChildren().clear();
-								addChatroomsToGrid(chatroomButtons);
-								// Save Modification
-								model.setChatroomGrid(chatroomGrid);
-								model.setChatroomsList(chatroomButtons);
 							}
+							// Update Grid
+							chatroomGrid.getChildren().clear();
+							addChatroomsToGrid(chatroomButtons);
+							// Save Modification
+							model.setChatroomGrid(chatroomGrid);
+							model.setChatroomsList(chatroomButtons);
 						}
 					}
 				} catch (IOException e1) {
@@ -371,7 +373,11 @@ public class ChatRoomManager extends VBox {
 				messageListSend.reset();
 				messageList.clear();
 				// rcv Server response
-				messageList = (ArrayList<String>) messageListRcv.readObject();
+				messageList = null;
+				// Wait for response
+				while (messageList == null) {
+					messageList = (ArrayList<String>) messageListRcv.readObject();
+				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			} catch (ClassNotFoundException e) {
@@ -561,34 +567,36 @@ public class ChatRoomManager extends VBox {
 	void addChatroomByResponse(List<String> selectedList) {
 		messageRcv = model.getMessageRcv();
 
-		String line;
 		String key = MsgKeys.ChatroomAddSuccess.getKey();
 
 		try {
-			if ((line = messageRcv.readLine()) != null) {
-				if (line.substring(line.length() - key.length(), line.length()).equals(key)) {
+			String message = null;
+			// Wait for response
+			while (message == null) {
+				message = messageRcv.readLine();
+			}
+			if (message.substring(message.length() - key.length(), message.length()).equals(key)) {
 
-					// Add new Chatroom to ChatroomList
-					chatroomList.add((ArrayList<String>) selectedList);
-					String buttonText = "";
-					// Make Chatroom Btn Form
-					for (String selected : selectedList) {
-						buttonText = buttonText + selected;
-						if (selected.equals(selectedList.get(selectedList.size() - 1)))
-							continue;
-						buttonText = buttonText + ", ";
-					}
-					ToggleButton newChatroom = new ToggleButton(buttonText);
-					newChatroom.setPrefSize(2 * btnWidth, btnHeight);
-					chatroomButtons.add(newChatroom);
-					addChatroomsToGrid(chatroomButtons);
-					// Save Modification
-					model.setChatroomGrid(chatroomGrid);
-					model.setChatroomsList(chatroomButtons);
-				} else {
-					AlertHandler.alert(ErrMsgs.AlreadyAdded.getMsg());
-					addChatroomHandler(null);
+				// Add new Chatroom to ChatroomList
+				chatroomList.add((ArrayList<String>) selectedList);
+				String buttonText = "";
+				// Make Chatroom Btn Form
+				for (String selected : selectedList) {
+					buttonText = buttonText + selected;
+					if (selected.equals(selectedList.get(selectedList.size() - 1)))
+						continue;
+					buttonText = buttonText + ", ";
 				}
+				ToggleButton newChatroom = new ToggleButton(buttonText);
+				newChatroom.setPrefSize(2 * btnWidth, btnHeight);
+				chatroomButtons.add(newChatroom);
+				addChatroomsToGrid(chatroomButtons);
+				// Save Modification
+				model.setChatroomGrid(chatroomGrid);
+				model.setChatroomsList(chatroomButtons);
+			} else {
+				AlertHandler.alert(ErrMsgs.AlreadyAdded.getMsg());
+				addChatroomHandler(null);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

@@ -194,7 +194,13 @@ public class JoinService extends VBox {
 				messageList.clear();
 
 				// Receive response
-				String rcv_message = messageRcv.readLine();
+				String rcv_message = null;
+				
+				// Wait for response
+				while(rcv_message == null) {
+					// Response Key (suc/fail)
+					rcv_message = messageRcv.readLine();
+				}
 
 				// Join Successful
 				if (rcv_message.equals(MsgKeys.JoinSuccess.getKey())) {

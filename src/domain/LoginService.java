@@ -198,10 +198,13 @@ public class LoginService extends VBox {
 			messageList.clear();
 
 			// Receive Server response
-			String responseMsg;
+			String responseMsg = null;
 			try {
-				// Response Key (suc/fail)
-				responseMsg = messageRcv.readLine();
+				// Wait for response
+				while(responseMsg == null) {
+					// Response Key (suc/fail)
+					responseMsg = messageRcv.readLine();
+				}
 
 				// Login Successful
 				if (responseMsg.substring(0, 5).equals(MsgKeys.LoginSuccess.getKey()) || responseMsg.substring(0, 5).equals("yhell")) {

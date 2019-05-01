@@ -228,7 +228,11 @@ public class UserManager extends VBox {
 					messageListSend.writeObject(messageList);
 					messageListSend.flush();
 					messageListSend.reset();
-					messageList = (ArrayList<String>) messageListRcv.readObject();
+					messageList = null;
+					// Wait for response
+					while(messageList == null) {
+						messageList = (ArrayList<String>) messageListRcv.readObject();
+					}
 				} catch (IOException e1) {
 					e1.printStackTrace();
 				} catch (ClassNotFoundException e1) {
@@ -348,8 +352,11 @@ public class UserManager extends VBox {
 				messageListSend.reset();
 
 				// rcv Server response
-				messageList = (ArrayList<String>) messageListRcv.readObject();
-
+				messageList = null;
+				// Wait for response
+				while(messageList == null) {
+					messageList = (ArrayList<String>) messageListRcv.readObject();
+				}
 				// make FriendBtnList from response
 				if (messageList.get(0).equals(MsgKeys.ReceiveSuccess.getKey())) {
 					for (int i = 1; i < messageList.size(); i++) {
@@ -412,26 +419,31 @@ public class UserManager extends VBox {
 
 						// Receive Server Response
 						messageRcv = model.getMessageRcv();
-						if ((message = messageRcv.readLine()) != null) {
-							// Remove Successful
-							if (message.equals(MsgKeys.RemoveSuccess.getKey()) || message.equals("yrmv_ok")) {
-								List<ToggleButton> tempList = new ArrayList<ToggleButton>();
-								tempList.addAll(friendsButtonList);
-								// Remove Selected Friends from Friend List
-								for (ToggleButton myFriend : tempList) {
-									for (String rmvFriend : rmvFriendsList) {
-										if (myFriend.getText().equals(rmvFriend))
-											friendsButtonList.remove(myFriend);
-									}
-								}
-								// Update Grid
-								friendGrid.getChildren().clear();
-								addFriendsToGrid(friendsButtonList, curGridSize);
-								// Save Modification
-								model.setFriendGrid(friendGrid);
-								model.setFriendsList(friendsButtonList);
-							}
+						message = null;
+
+						// Wait for response
+						while (message == null) {
+							message = messageRcv.readLine();
 						}
+						// Remove Successful
+						if (message.equals(MsgKeys.RemoveSuccess.getKey()) || message.equals("yrmv_ok")) {
+							List<ToggleButton> tempList = new ArrayList<ToggleButton>();
+							tempList.addAll(friendsButtonList);
+							// Remove Selected Friends from Friend List
+							for (ToggleButton myFriend : tempList) {
+								for (String rmvFriend : rmvFriendsList) {
+									if (myFriend.getText().equals(rmvFriend))
+										friendsButtonList.remove(myFriend);
+								}
+							}
+							// Update Grid
+							friendGrid.getChildren().clear();
+							addFriendsToGrid(friendsButtonList, curGridSize);
+							// Save Modification
+							model.setFriendGrid(friendGrid);
+							model.setFriendsList(friendsButtonList);
+						}
+
 					}
 				} catch (IOException e1) {
 					e1.printStackTrace();
@@ -492,44 +504,48 @@ public class UserManager extends VBox {
 						messageListSend.reset();
 						messageList.clear();
 
-						if ((message = messageRcv.readLine()) != null) {
-							// Add Friend Successful
-							if (message.substring(0, 3).equals(MsgKeys.AddSuccess.getKey())
-									|| message.substring(0, 4).equals("yadd")) {
-								if (message.substring(0, 1).equals("y"))
-									friend = message.substring(5, message.length());
-								else
-									friend = message.substring(4, message.length());
+						message = null;
+						// Wait for response
+						while (message == null) {
+							message = messageRcv.readLine();
+						}
 
-								// make new Friend Button
-								tmpFriend = new ToggleButton(friend);
-								tmpFriend.setShape(new Circle(10));
-								tmpFriend.setPrefSize(btnHeight * 2, btnHeight * 2);
+						// Add Friend Successful
+						if (message.substring(0, 3).equals(MsgKeys.AddSuccess.getKey())
+								|| message.substring(0, 4).equals("yadd")) {
+							if (message.substring(0, 1).equals("y"))
+								friend = message.substring(5, message.length());
+							else
+								friend = message.substring(4, message.length());
 
-								// Add Friend to Friend Grid
-								friendsButtonList.add(tmpFriend);
-								friendGrid.add(tmpFriend, gridX, gridY);
+							// make new Friend Button
+							tmpFriend = new ToggleButton(friend);
+							tmpFriend.setShape(new Circle(10));
+							tmpFriend.setPrefSize(btnHeight * 2, btnHeight * 2);
 
-								if (gridX > curGridSize) {
-									gridY++;
-									gridX = 0;
-								} else {
-									gridX++;
-								}
-								return;
+							// Add Friend to Friend Grid
+							friendsButtonList.add(tmpFriend);
+							friendGrid.add(tmpFriend, gridX, gridY);
+
+							if (gridX > curGridSize) {
+								gridY++;
+								gridX = 0;
+							} else {
+								gridX++;
 							}
+							return;
+						}
 
-							// When such id not Exist
-							if (message.equals(MsgKeys.AddFailByID.getKey()) || message.equals("yno_such_user")) {
-								AlertHandler.alert(ErrMsgs.NoSuchUser.getMsg());
-								addFriendHandler(e);
-							}
+						// When such id not Exist
+						if (message.equals(MsgKeys.AddFailByID.getKey()) || message.equals("yno_such_user")) {
+							AlertHandler.alert(ErrMsgs.NoSuchUser.getMsg());
+							addFriendHandler(e);
+						}
 
-							// When Already added Friend
-							if (message.equals(MsgKeys.AddFailByDupli.getKey()) || message.equals("yfriend_exists")) {
-								AlertHandler.alert(ErrMsgs.AlreadyAdded.getMsg());
-								addFriendHandler(e);
-							}
+						// When Already added Friend
+						if (message.equals(MsgKeys.AddFailByDupli.getKey()) || message.equals("yfriend_exists")) {
+							AlertHandler.alert(ErrMsgs.AlreadyAdded.getMsg());
+							addFriendHandler(e);
 						}
 					}
 				} catch (IOException e1) {
