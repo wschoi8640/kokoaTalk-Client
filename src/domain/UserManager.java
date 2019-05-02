@@ -208,6 +208,7 @@ public class UserManager extends VBox {
 		refreshBtn.setPrefWidth(newPanelWidth.doubleValue());
 	}
 
+	
 	/**
 	 * Updates Friends Connection Status <br/>
 	 * <br/>
@@ -224,6 +225,9 @@ public class UserManager extends VBox {
 				messageListSend = model.getMessageListSend();
 				messageList.clear();
 				messageList.add(MsgKeys.RefreshRequest.getKey());
+				for(ToggleButton friendBtn : friendsButtonList) {
+					messageList.add(friendBtn.getText());
+				}
 				try {
 					messageListSend.writeObject(messageList);
 					messageListSend.flush();
@@ -367,7 +371,7 @@ public class UserManager extends VBox {
 						temp_list.add(tmpFriend);
 					}
 					return temp_list;
-				}
+				}	
 				messageList.clear();
 			}
 		} catch (IOException e1) {

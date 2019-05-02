@@ -69,6 +69,7 @@ public class LoginService extends VBox {
 		this.model = model;
 		initLoginGrid();
 		connectToServer();
+		model.setLoginService(this);
 	}
 
 	
@@ -176,7 +177,6 @@ public class LoginService extends VBox {
 			AlertHandler.alert(ErrMsgs.BlankPWField.getMsg());
 			return;
 		}
-
 		// Send Server ID, PW
 		if (sock.isConnected()) {
 			userID = idField.getText();
@@ -186,7 +186,6 @@ public class LoginService extends VBox {
 			messageList.add(0, MsgKeys.LoginRequest.getKey());
 			messageList.add(1, userID);
 			messageList.add(2, userPW);
-
 			try {
 				// Send List to Server
 				messageListSender.writeObject(messageList);
@@ -208,17 +207,19 @@ public class LoginService extends VBox {
 
 				// Login Successful
 				if (responseMsg.substring(0, 5).equals(MsgKeys.LoginSuccess.getKey()) || responseMsg.substring(0, 5).equals("yhell")) {
+					int mod = 0;
+					if(responseMsg.substring(0, 5).equals("yhell")) mod = 1;
 					AlertHandler.alert(ErrMsgs.LoginSuccess.getMsg());
-
+					System.out.println(responseMsg);
 					// Save user Data
-					model.setConnectedName(responseMsg.substring(6, responseMsg.length()));
+					model.setConnectedName(responseMsg.substring(6 + mod, responseMsg.length()));
 					model.setConnectedID(userID);
 
 					// Save this Grid for later
 					model.setLoginService(this);
-					
 					// Change to ChatUser Grid 
 					chatUserService = new UserManager(model);
+
 					this.getChildren().clear();
 					this.getChildren().add(chatUserService);
 					return;
