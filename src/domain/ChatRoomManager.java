@@ -239,7 +239,7 @@ public class ChatRoomManager extends VBox {
 
 						// Add key and UserName and List to Msg List
 						messageList.clear();
-						messageList.add(0, "rmv_chatroom");
+						messageList.add(0, MsgKeys.ChatroomRemoveRequest.getKey());
 						messageList.add(1, model.getConnectedName());
 						for (String rmvChatroom : rmvChatroomsList) {
 							messageList.add(rmvChatroom);
@@ -521,7 +521,7 @@ public class ChatRoomManager extends VBox {
 
 				// Add key and User name and Selected List to Msg List
 				messageList.clear();
-				messageList.add("add_chatroom");
+				messageList.add(MsgKeys.ChatroomAddRequest.getKey());
 				messageList.add(model.getConnectedName());
 				for (String selectedFriend : selectedFriendList) {
 					temp = temp + selectedFriend;

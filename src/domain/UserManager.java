@@ -495,7 +495,7 @@ public class UserManager extends VBox {
 						messageRcv = model.getMessageRcv();
 
 						// Add Key and Friend to Msg List
-						messageList.add(0, MsgKeys.AddRequest.getKey());
+						messageList.add(0, MsgKeys.FriendAddRequest.getKey());
 						messageList.add(1, model.getConnectedName());
 						messageList.add(2, friend);
 
@@ -511,7 +511,7 @@ public class UserManager extends VBox {
 						}
 
 						// Add Friend Successful
-						if (message.substring(0, 3).equals(MsgKeys.AddSuccess.getKey())
+						if (message.substring(0, 3).equals(MsgKeys.FriendAddSuccess.getKey())
 								|| message.substring(0, 4).equals("yadd")) {
 							if (message.substring(0, 1).equals("y"))
 								friend = message.substring(5, message.length());
@@ -537,13 +537,13 @@ public class UserManager extends VBox {
 						}
 
 						// When such id not Exist
-						if (message.equals(MsgKeys.AddFailByID.getKey()) || message.equals("yno_such_user")) {
+						if (message.equals(MsgKeys.FriendAddFailByID.getKey()) || message.equals("yno_such_user")) {
 							AlertHandler.alert(ErrMsgs.NoSuchUser.getMsg());
 							addFriendHandler(e);
 						}
 
 						// When Already added Friend
-						if (message.equals(MsgKeys.AddFailByDupli.getKey()) || message.equals("yfriend_exists")) {
+						if (message.equals(MsgKeys.FriendAddFailByDupli.getKey()) || message.equals("yfriend_exists")) {
 							AlertHandler.alert(ErrMsgs.AlreadyAdded.getMsg());
 							addFriendHandler(e);
 						}

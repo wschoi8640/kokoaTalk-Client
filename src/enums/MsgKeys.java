@@ -1,6 +1,9 @@
 package enums;
 
 public enum MsgKeys {
+	ChatroomAddFailByDupli("chatroom_exists"),
+	ChatroomRemoveRequest("rmv_chatroom"),
+	ChatroomAddRequest("add_chatroom"),
 	ChatroomAddSuccess("chatroom_added"),
 	ReceiveSuccess("rcv_ok"),
 	ReceiveChatrooms("rcv_chatrooms"),
@@ -8,10 +11,10 @@ public enum MsgKeys {
 	JoinFail("join_fail"),
 	JoinSuccess("join_ok"),
 	JoinRequest("do_join"),
-	AddFailByDupli("friend_exists"),
-	AddFailByID("no_such_user"),
-	AddSuccess("add"),
-	AddRequest("add_friend"),
+	FriendAddFailByDupli("friend_exists"),
+	FriendAddFailByID("no_such_user"),
+	FriendAddSuccess("add"),
+	FriendAddRequest("add_friend"),
 	RemoveSuccess("rmv_ok"),
 	RemoveRequest("rmv_friend"),
 	RefreshSuccess("refresh_ok"),
