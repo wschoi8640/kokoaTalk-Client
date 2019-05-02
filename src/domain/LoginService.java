@@ -200,19 +200,23 @@ public class LoginService extends VBox {
 			String responseMsg = null;
 			try {
 				// Wait for response
-				while(responseMsg == null) {
-					// Response Key (suc/fail)
-					responseMsg = messageRcv.readLine();
+				messageList = null;
+				// Wait for response
+				while(messageList == null) {
+					try {
+						messageList = (ArrayList<String>) messageListRcv.readObject();
+					} catch (ClassNotFoundException e) {
+						e.printStackTrace();
+					}
 				}
+				responseMsg = messageList.get(0);
 
 				// Login Successful
-				if (responseMsg.substring(0, 5).equals(MsgKeys.LoginSuccess.getKey()) || responseMsg.substring(0, 5).equals("yhell")) {
-					int mod = 0;
-					if(responseMsg.substring(0, 5).equals("yhell")) mod = 1;
+				if (responseMsg.substring(0, 5).equals(MsgKeys.LoginSuccess.getKey())) {
 					AlertHandler.alert(ErrMsgs.LoginSuccess.getMsg());
 					System.out.println(responseMsg);
 					// Save user Data
-					model.setConnectedName(responseMsg.substring(6 + mod, responseMsg.length()));
+					model.setConnectedName(responseMsg.substring(6, responseMsg.length()));
 					model.setConnectedID(userID);
 
 					// Save this Grid for later
