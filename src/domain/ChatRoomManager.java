@@ -259,14 +259,19 @@ public class ChatRoomManager extends VBox {
 						messageListSend.reset();
 						messageList.clear();
 
-						// Receive Server Response
-						String message = null;
+						// rcv Server response
+						messageList = null;
 						// Wait for response
-						while (message == null) {
-							message = messageRcv.readLine();
+						while(messageList == null) {
+							try {
+								messageList = (ArrayList<String>) messageListRcv.readObject();
+							} catch (ClassNotFoundException e1) {
+								e1.printStackTrace();
+							}
 						}
+						String message = messageList.get(0);
 						// Remove Successful
-						if (message.equals(MsgKeys.RemoveSuccess.getKey()) || message.equals("yrmv_ok")) {
+						if (message.equals(MsgKeys.RemoveSuccess.getKey())) {
 							List<ToggleButton> tempList = new ArrayList<ToggleButton>();
 							tempList.addAll(chatroomButtons);
 							// Remove Selected Chatrooms from Chatroom List
