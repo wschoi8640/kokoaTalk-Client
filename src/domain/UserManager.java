@@ -176,7 +176,8 @@ public class UserManager extends VBox {
 		this.setFillWidth(true);
 		this.setSpacing(btnHeight / 5);
 		this.getChildren().addAll(menuGrid, userNameLabel, refreshBtn, friendGrid, scrollPane, funcGrid, logoutBtn);
-
+		
+		refreshHandler(null);
 	}
 
 	/**
