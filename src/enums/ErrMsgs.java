@@ -1,6 +1,9 @@
 package enums;
 
 public enum ErrMsgs {
+	WrongPWFormat("must include Alphabet and Number!"),
+	WrongIDFormat("Symbols Not allowed!"),
+	AlreadyExistingID("ID Already Exist!"),
 	AlreadyOpenedChat("Already Opened Chatroom!"),
 	ChooseOneChatRoom("Choose one Chatroom!"),
 	NoChatRoomChosen("No Chatroom Chosen!"),

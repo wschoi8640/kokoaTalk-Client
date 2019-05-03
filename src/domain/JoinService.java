@@ -32,6 +32,7 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import model.Model;
 import utils.AlertHandler;
+import utils.ValidChecker;
 
 /**
  * This class consists Join Panel
@@ -171,6 +172,20 @@ public class JoinService extends VBox {
 			AlertHandler.alert(ErrMsgs.WrongPWRepeat.getMsg());
 			return;
 		}
+		
+		if(!ValidChecker.joinIDCheck(idField.getText())) {
+			AlertHandler.alert(ErrMsgs.WrongIDFormat.getMsg());
+			idField.clear();
+			return;
+		}
+		
+		if(!ValidChecker.joinPWCheck(pwField.getText())) {
+			AlertHandler.alert(ErrMsgs.WrongPWFormat.getMsg());
+			pwField.clear();
+			pw2Field.clear();
+			return;
+		}
+		
 
 		try {
 			if (sock.isConnected()) {
@@ -214,6 +229,7 @@ public class JoinService extends VBox {
 				// Join Fail
 				if (rcv_message.equals(MsgKeys.JoinFail.getKey())) {
 					// Empty Fields
+					AlertHandler.alert(ErrMsgs.AlreadyExistingID.getMsg());
 					nameField.clear();
 					idField.clear();
 					pwField.clear();
