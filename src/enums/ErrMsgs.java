@@ -1,5 +1,10 @@
 package enums;
-
+/**
+ * This Enum Contains ErrMsgs
+ * 
+ * @author wschoi8640
+ * @version 1.0
+ */
 public enum ErrMsgs {
 	WrongPWFormat("must include Alphabet and Number!"),
 	WrongIDFormat("Symbols Not allowed!"),

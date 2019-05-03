@@ -1,5 +1,10 @@
 package enums;
-
+/**
+ * This Enum contains MsgKeys
+ * 
+ * @author wschoi8640
+ * @version 1.0
+ */
 public enum MsgKeys {
 	ChatroomAddFailByDupli("chatroom_exists"),
 	ChatroomRemoveRequest("rmv_chatroom"),

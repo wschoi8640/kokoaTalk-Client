@@ -1,5 +1,10 @@
 package enums;
-
+/**
+ * This Enum Contains Settings of Client
+ * 
+ * @author wschoi8640
+ * @version 1.0
+ */
 public enum Settings {
 	WelcomeMsg("Welcome!"),
 	ConnectedFriendColor("-fx-background-color: Yellow"),
