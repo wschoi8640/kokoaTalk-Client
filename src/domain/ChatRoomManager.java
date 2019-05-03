@@ -88,6 +88,7 @@ public class ChatRoomManager extends VBox {
 		this.model = model;
 		this.sock = model.getSock();
 		initChatRoomManageGrid();
+		model.setChatRoomManager(this);
 	}
 
 	void initChatRoomManageGrid() {
@@ -189,6 +190,8 @@ public class ChatRoomManager extends VBox {
 				setHeightProperty(newSceneHeight);
 			}
 		});
+		setHeightProperty(model.getLoginService().getHeight());
+		setWidthProperty(model.getLoginService().getWidth());
 		this.setAlignment(Pos.TOP_CENTER);
 		this.setFillWidth(true);
 		this.setSpacing(btnHeight / 5);
@@ -204,6 +207,11 @@ public class ChatRoomManager extends VBox {
 
 	protected void setWidthProperty(Number newSceneWidth) {
 		chatroomGrid.setPrefWidth(newSceneWidth.doubleValue());
+		for(ToggleButton chatroomBtn : chatroomButtons) {
+			chatroomBtn.setPrefWidth(newSceneWidth.doubleValue() / 2);
+		}
+		chatroomGrid.getChildren().clear();
+		addChatroomsToGrid(chatroomButtons);
 		showUsrBtn.setPrefWidth(newSceneWidth.doubleValue() / 2);
 		showChatBtn.setPrefWidth(newSceneWidth.doubleValue() / 2);
 		openChatBtn.setPrefWidth(newSceneWidth.doubleValue());
@@ -588,7 +596,8 @@ public class ChatRoomManager extends VBox {
 					buttonText = buttonText + ", ";
 				}
 				ToggleButton newChatroom = new ToggleButton(buttonText);
-				newChatroom.setPrefSize(2 * btnWidth, btnHeight);
+				newChatroom.setPrefWidth(btnWidth);
+				newChatroom.setPrefHeight(btnHeight);
 				chatroomButtons.add(newChatroom);
 				addChatroomsToGrid(chatroomButtons);
 				// Save Modification
@@ -612,6 +621,6 @@ public class ChatRoomManager extends VBox {
 	 */
 	void showUserHandler(ActionEvent e) {
 		model.getLoginService().getChildren().clear();
-		model.getLoginService().getChildren().add(model.getChatUserService());
+		model.getLoginService().getChildren().add(model.getUserManager());
 	}
 }

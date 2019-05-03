@@ -55,6 +55,7 @@ public class UserManager extends VBox {
 	private String message;
 	private int gridX = 0;
 	private int gridY = 0;
+	private int cnt = 0;
 	private double curGridSize = 4;
 	private double btnHeight = 50;
 	private double btnWidth = 300;
@@ -75,8 +76,8 @@ public class UserManager extends VBox {
 		this.model = model;
 		this.loginService = model.getLoginService();
 		this.sock = model.getSock();
-		model.setChatUserService(this);
 		initUserManageGrid();
+		model.setUserManager(this);
 	}
 
 	/**
@@ -297,10 +298,13 @@ public class UserManager extends VBox {
 	 */
 	void showChatHandler(ActionEvent e) {
 		// Add ChatRoomService Panel to Primary Stage and save it for later
-		ChatRoomManager chatRoomManager = new ChatRoomManager(model);
-		model.setChatRoomService(chatRoomManager);
+		if(cnt == 0) {
+			ChatRoomManager chatRoomManager = new ChatRoomManager(model);
+			model.setChatRoomManager(chatRoomManager);
+			cnt = 1;
+		}
 		model.getLoginService().getChildren().clear();
-		model.getLoginService().getChildren().add(chatRoomManager);
+		model.getLoginService().getChildren().add(model.getChatRoomManager());
 	}
 
 	/**

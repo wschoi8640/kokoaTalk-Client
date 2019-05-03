@@ -23,8 +23,8 @@ public class Model {
 	private ChattingRoom chattingRoom;
 	private JoinService joinService;
 	private LoginService loginService;
-	private UserManager chatUserService;
-	private ChatRoomManager chatRoomService;
+	private UserManager userManager;
+	private ChatRoomManager chatRoomManager;
 	private Socket sock;
 	private ObjectInputStream messageListRcv;
 	private ObjectOutputStream messageListSend;
@@ -61,20 +61,20 @@ public class Model {
 		this.loginService = loginService;
 	}
 
-	public UserManager getChatUserService() {
-		return chatUserService;
+	public UserManager getUserManager() {
+		return userManager;
 	}
 
-	public void setChatUserService(UserManager chatUserService) {
-		this.chatUserService = chatUserService;
+	public void setUserManager(UserManager userManager) {
+		this.userManager = userManager;
 	}
 
-	public ChatRoomManager getChatRoomService() {
-		return chatRoomService;
+	public ChatRoomManager getChatRoomManager() {
+		return chatRoomManager;
 	}
 
-	public void setChatRoomService(ChatRoomManager chatRoomService) {
-		this.chatRoomService = chatRoomService;
+	public void setChatRoomManager(ChatRoomManager chatRoomManager) {
+		this.chatRoomManager = chatRoomManager;
 	}
 
 	public Socket getSock() {
