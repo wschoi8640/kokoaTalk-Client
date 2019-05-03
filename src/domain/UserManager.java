@@ -297,10 +297,10 @@ public class UserManager extends VBox {
 	 */
 	void showChatHandler(ActionEvent e) {
 		// Add ChatRoomService Panel to Primary Stage and save it for later
-		ChatRoomManager chatRoomService = new ChatRoomManager(model);
-		model.setChatRoomService(chatRoomService);
+		ChatRoomManager chatRoomManager = new ChatRoomManager(model);
+		model.setChatRoomService(chatRoomManager);
 		model.getLoginService().getChildren().clear();
-		model.getLoginService().getChildren().add(chatRoomService);
+		model.getLoginService().getChildren().add(chatRoomManager);
 	}
 
 	/**
@@ -423,14 +423,20 @@ public class UserManager extends VBox {
 
 						// Receive Server Response
 						messageRcv = model.getMessageRcv();
-						message = null;
-
+						
+						messageList = null;
 						// Wait for response
-						while (message == null) {
-							message = messageRcv.readLine();
+						while(messageList == null) {
+							try {
+								messageList = (ArrayList<String>) messageListRcv.readObject();
+							} catch (ClassNotFoundException e1) {
+								e1.printStackTrace();
+							}
 						}
+						message = messageList.get(0);
+
 						// Remove Successful
-						if (message.equals(MsgKeys.RemoveSuccess.getKey()) || message.equals("yrmv_ok")) {
+						if (message.equals(MsgKeys.RemoveSuccess.getKey())) {
 							List<ToggleButton> tempList = new ArrayList<ToggleButton>();
 							tempList.addAll(friendsButtonList);
 							// Remove Selected Friends from Friend List
@@ -508,19 +514,20 @@ public class UserManager extends VBox {
 						messageListSend.reset();
 						messageList.clear();
 
-						message = null;
+						messageList = null;
 						// Wait for response
-						while (message == null) {
-							message = messageRcv.readLine();
+						while(messageList == null) {
+							try {
+								messageList = (ArrayList<String>) messageListRcv.readObject();
+							} catch (ClassNotFoundException e1) {
+								e1.printStackTrace();
+							}
 						}
-
+						message = messageList.get(0);
+						messageList.clear();
 						// Add Friend Successful
-						if (message.substring(0, 3).equals(MsgKeys.FriendAddSuccess.getKey())
-								|| message.substring(0, 4).equals("yadd")) {
-							if (message.substring(0, 1).equals("y"))
-								friend = message.substring(5, message.length());
-							else
-								friend = message.substring(4, message.length());
+						if (message.substring(0, 3).equals(MsgKeys.FriendAddSuccess.getKey())) {
+							friend = message.substring(4, message.length());
 
 							// make new Friend Button
 							tmpFriend = new ToggleButton(friend);
@@ -541,13 +548,13 @@ public class UserManager extends VBox {
 						}
 
 						// When such id not Exist
-						if (message.equals(MsgKeys.FriendAddFailByID.getKey()) || message.equals("yno_such_user")) {
+						if (message.equals(MsgKeys.FriendAddFailByID.getKey())) {
 							AlertHandler.alert(ErrMsgs.NoSuchUser.getMsg());
 							addFriendHandler(e);
 						}
 
 						// When Already added Friend
-						if (message.equals(MsgKeys.FriendAddFailByDupli.getKey()) || message.equals("yfriend_exists")) {
+						if (message.equals(MsgKeys.FriendAddFailByDupli.getKey())) {
 							AlertHandler.alert(ErrMsgs.AlreadyAdded.getMsg());
 							addFriendHandler(e);
 						}

@@ -210,11 +210,10 @@ public class LoginService extends VBox {
 					}
 				}
 				responseMsg = messageList.get(0);
-
+				messageList.clear();
 				// Login Successful
 				if (responseMsg.substring(0, 5).equals(MsgKeys.LoginSuccess.getKey())) {
 					AlertHandler.alert(ErrMsgs.LoginSuccess.getMsg());
-					System.out.println(responseMsg);
 					// Save user Data
 					model.setConnectedName(responseMsg.substring(6, responseMsg.length()));
 					model.setConnectedID(userID);
@@ -223,7 +222,6 @@ public class LoginService extends VBox {
 					model.setLoginService(this);
 					// Change to ChatUser Grid 
 					chatUserService = new UserManager(model);
-
 					this.getChildren().clear();
 					this.getChildren().add(chatUserService);
 					return;

@@ -5,7 +5,7 @@ public enum Settings {
 	ConnectedFriendColor("-fx-background-color: Yellow"),
 	Font("Consolas"),
 	LoginServerPort(10001),
-	ServerIP("192.168.0.8"),
+	ServerIP("192.168.0.34"),
 	Title("KokoaTalk");
 	
 	String setting;
