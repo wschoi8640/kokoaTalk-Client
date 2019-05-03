@@ -10,7 +10,7 @@ public class ValidChecker {
 	}
 	
 	public static boolean joinPWCheck(String pw) {
-		if(pw.matches("^[a-zA-Z]*$") && pw.matches(".*[0-9].*")) {
+		if((pw.matches(".*[a-z].*") || pw.matches(".*[A-Z].*")) && pw.matches(".*[0-9].*")) {
 			return true;
 		}
 		return false;
