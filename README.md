@@ -8,7 +8,7 @@ Messanger app using JavaFX and Socket (Client Side)
 
 * Login Panel
 
-<img src="./images/chattingroomPanel.gif">
+<img src="./images/loginPanel.gif">
 
 * Join Panel
 
