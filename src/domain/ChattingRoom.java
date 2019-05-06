@@ -71,8 +71,7 @@ public class ChattingRoom extends VBox {
 		}
 	}
 
-	// 과거의 채팅 내용을 불러오는 메소드
-	// 채팅방이 열릴시 실행된다.
+	// Brings previous chat 
 	void handleGetChatData() {
 		try {
 			if (sock.isConnected()) {
@@ -80,7 +79,7 @@ public class ChattingRoom extends VBox {
 				messageOutput = new ObjectOutputStream(out);
 				message.clear();
 
-				// 사용자 이름과 채팅방 이름을 요청에 담아서 보낸다.
+				// Send Server userName and chatroomName
 				message.add("rcv_chatData");
 				message.add(userName);
 				message.add(chatroomName);
@@ -95,8 +94,7 @@ public class ChattingRoom extends VBox {
 		}
 	}
 
-	// 채팅 입력시 실행되는 메소드
-	// 채팅 서버로 입력된 내용을 전송한다.
+	// Send Server new chatData
 	void handleTextField(ActionEvent event) {
 		try {
 			if (sock.isConnected()) {
@@ -120,7 +118,7 @@ public class ChattingRoom extends VBox {
 		}
 	}
 
-	// 채팅 서버에서 돌아오는 응답을 처리하는 쓰레드
+	// Handles Response from the Server
 	private class ChattingRoomThread extends Thread {
 		Socket sock;
 
@@ -144,13 +142,14 @@ public class ChattingRoom extends VBox {
 
 					int count = 0;
 
-					// 채팅서버에서 도착한 메시지가 현재 사용자, 현재 채팅방에 해당하는지 확인하기 위해 확인한다.
+					
 					String all_member0 = message.get(1) + ", " + message.get(2);
 					String all_member1 = userName + ", " + chatroomName;
 					String[] messageInfos = all_member0.split(", ");
 					String[] chatroomInfos = all_member1.split(", ");
 
-					// 도착한 메시지와 현재 채팅방 정보를 비교한다.
+					// Check if response is User's
+					// Compare UserName and ChatroomName.
 					for (String messageInfo : messageInfos) {
 						for (String chatroomInfo : chatroomInfos) {
 							if (messageInfo.equals(chatroomInfo))
@@ -164,20 +163,20 @@ public class ChattingRoom extends VBox {
 					String rcv_key = "rcv_chatData";
 
 					if (message != null) {
-						// 채팅 전송에 성공할 경우 채팅창에 내용을 표시해 준다.
+						// Print Chats at Chatroom after sending Server
 						if (message.get(0).equals(send_key)) {
 							if (count == messageInfos.length && count == chatroomInfos.length) {
 								textArea.appendText("[" + message.get(1) + "] : " + message.get(3) + "\n");
 							}
 						}
 
-						// 과거 채팅 받아오기에 성공할 경우 채팅창에 표시해준다.
+						// Print Old Chats at Chatroom on rcv success
 						if (message.get(0).equals(rcv_key) && isOpen == false) {
 							if (count == messageInfos.length && count == chatroomInfos.length) {
 								for (int i = 3; i < message.size(); i++) {
 									textArea.appendText(message.get(i));
 								}
-								// 이미 열려있는 채팅방의 경우 과거의 채팅을 또 보여줄 필요가 없다.
+								// Print Old Chat only once
 								isOpen = true;
 							}
 						}
