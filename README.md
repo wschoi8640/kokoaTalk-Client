@@ -1,4 +1,5 @@
-# kokoaTalk-Client
+# kokoaTalk-Client 
+[![HitCount](http://hits.dwyl.io/wschoi8640/kokoaTalk-Client.svg)](http://hits.dwyl.io/wschoi8640/kokoaTalk-Client)
 
 # Content
 
