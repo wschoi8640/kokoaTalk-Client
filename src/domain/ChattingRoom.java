@@ -16,8 +16,11 @@ import model.Model;
 
 import java.io.*;
 
-/*
- *  이 클래스는 채팅방 기능을 구성하고 채팅 서버와 통신한다. 
+/**
+ * This class consists ChattingRoom Panel and offers Chat service
+ * 
+ * @author wschoi8640
+ * @version 1.0
  */
 public class ChattingRoom extends VBox {
 	public Stage parentStage;
@@ -33,25 +36,25 @@ public class ChattingRoom extends VBox {
 	private Model model;
 	private boolean isOpen = false;
 
-	// 현재 사용자의 이름, 채팅방이름을 가져온다.
+	// brings Name of User and Name of Chatroom
 	public ChattingRoom(String userName, String chatroomName, Model echoModel) {
 		this.model = echoModel;
 		this.userName = userName;
 		this.chatroomName = chatroomName;
-		initialize();
+		initChattingRoom();
 	}
 
-	void initialize() {
+	void initChattingRoom() {
 		message = new ArrayList<String>();
 
-		// 채팅 내용이 표시되는곳
+		// TextArea where text Printed
 		textArea = new TextArea();
 		textArea.setEditable(false);
 		textArea.setPrefSize(600, 800);
 
-		// 채팅을 입력하는 곳
+		// TextField where text filed
 		textField = new TextField();
-		// 채팅을 입력할시 서버로 보내지도록 이벤트 설정한다.
+		// Sent to the Server on submit
 		textField.setOnAction(e -> handleTextField(e));
 		this.getChildren().addAll(textArea, textField);
 		handleConnect();
@@ -60,8 +63,8 @@ public class ChattingRoom extends VBox {
 
 	void handleConnect() {
 		try {
-			// 서버 IP의 채팅서버 Port로 연결한다.
-			sock = new Socket(Settings.ServerIP.getSetting(), 10002);
+			// Connects to Server port and IP
+			sock = new Socket(Settings.ServerIP.getSetting(), Settings.ChattingServerPort.getNum());
 			new ChattingRoomThread(sock).start();
 		} catch (IOException e) {
 			e.printStackTrace();

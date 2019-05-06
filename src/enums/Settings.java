@@ -9,6 +9,7 @@ public enum Settings {
 	WelcomeMsg("Welcome!"),
 	ConnectedFriendColor("-fx-background-color: Yellow"),
 	Font("Consolas"),
+	ChattingServerPort(10002),
 	LoginServerPort(10001),
 	ServerIP("192.168.0.12"),
 	Title("KokoaTalk");
