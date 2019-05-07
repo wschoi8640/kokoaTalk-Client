@@ -32,6 +32,7 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import model.Model;
 import utils.AlertHandler;
+import utils.CompetitionHandler;
 import utils.ValidChecker;
 
 /**
@@ -149,6 +150,7 @@ public class JoinService extends VBox {
 	 * <br/>5. Show user Result
 	 */
 	void joinHandler(ActionEvent event) {
+		CompetitionHandler.handle(model.getCurStatus());	
 		// Check if any Field is blank
 		if (nameField.getText().trim().isEmpty()) {
 			AlertHandler.alert(ErrMsgs.BlankNameField.getMsg());
@@ -207,7 +209,8 @@ public class JoinService extends VBox {
 				messageListSend.flush();
 				messageListSend.reset();
 				messageList.clear();
-
+				model.setCurStatus("waiting");
+				
 				// Receive response
 				String rcv_message = null;
 				
@@ -216,7 +219,9 @@ public class JoinService extends VBox {
 					// Response Key (suc/fail)
 					rcv_message = messageRcv.readLine();
 				}
+				model.setCurStatus("available");
 
+				
 				// Join Successful
 				if (rcv_message.equals(MsgKeys.JoinSuccess.getKey())) {
 					AlertHandler.alert(ErrMsgs.JoinSuccess.getMsg());
@@ -263,6 +268,7 @@ public class JoinService extends VBox {
 	 * @param backEvent
 	 */
 	void backHandler(ActionEvent event) {
+		model.setCurStage("loginService");
 		model.getLoginService().getChildren().clear();
 		model.getLoginService().getChildren().addAll(model.getTitleLabel(), model.getLoginGrid());
 	}

@@ -39,6 +39,7 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import model.Model;
 import utils.AlertHandler;
+import utils.CompetitionHandler;
 
 /**
  * This class consists ChatRoomService Panel and offers ChatRoomManage service
@@ -230,6 +231,8 @@ public class ChatRoomManager extends VBox {
 	 * @param removeEvent
 	 */
 	void rmvChatroomHandler(ActionEvent e) {
+		CompetitionHandler.handle(model.getCurStatus());	
+
 		// Remove when having any Chatroom
 		if (!chatroomButtons.isEmpty()) {
 			List<String> rmvChatroomsList = new ArrayList<String>();
@@ -257,6 +260,8 @@ public class ChatRoomManager extends VBox {
 						messageListSend.writeObject(messageList);
 						messageListSend.flush();
 						messageListSend.reset();
+						model.setCurStatus("waiting");
+
 						messageList.clear();
 
 						// rcv Server response
@@ -269,6 +274,7 @@ public class ChatRoomManager extends VBox {
 								e1.printStackTrace();
 							}
 						}
+						model.setCurStatus("available");
 						String message = messageList.get(0);
 						// Remove Successful
 						if (message.equals(MsgKeys.RemoveSuccess.getKey())) {
@@ -369,6 +375,8 @@ public class ChatRoomManager extends VBox {
 	 * @return List<Chatroom>
 	 */
 	private List<ToggleButton> rcvChatrooms() {
+		CompetitionHandler.handle(model.getCurStatus());	
+
 		if (sock.isConnected()) {
 			List<ToggleButton> temp_list = new ArrayList<ToggleButton>();
 
@@ -385,12 +393,15 @@ public class ChatRoomManager extends VBox {
 				messageListSend.flush();
 				messageListSend.reset();
 				messageList.clear();
+				model.setCurStatus("waiting");
+
 				// rcv Server response
 				messageList = null;
 				// Wait for response
 				while (messageList == null) {
 					messageList = (ArrayList<String>) messageListRcv.readObject();
 				}
+				model.setCurStatus("available");
 			} catch (IOException e) {
 				e.printStackTrace();
 			} catch (ClassNotFoundException e) {
@@ -450,6 +461,8 @@ public class ChatRoomManager extends VBox {
 	 * @param addEvent
 	 */
 	void addChatroomHandler(ActionEvent e) {
+		CompetitionHandler.handle(model.getCurStatus());	
+
 		openChatBtn.setVisible(false);
 		friendsList.clear();
 		chatroomGrid.getChildren().clear();
@@ -547,6 +560,7 @@ public class ChatRoomManager extends VBox {
 					messageListSend.writeObject(messageList);
 					messageListSend.flush();
 					messageListSend.reset();
+					model.setCurStatus("waiting");
 					messageList.clear();
 					chatroomGrid.getChildren().clear();
 
@@ -588,6 +602,7 @@ public class ChatRoomManager extends VBox {
 			while (message == null) {
 				message = messageRcv.readLine();
 			}
+			model.setCurStatus("available");
 			if (message.substring(message.length() - key.length(), message.length()).equals(key)) {
 
 				// Add new Chatroom to ChatroomList
@@ -625,6 +640,7 @@ public class ChatRoomManager extends VBox {
 	 * @param showUserEvent
 	 */
 	void showUserHandler(ActionEvent e) {
+		model.setCurStage("userManager");
 		model.getLoginService().getChildren().clear();
 		model.getLoginService().getChildren().add(model.getUserManager());
 	}

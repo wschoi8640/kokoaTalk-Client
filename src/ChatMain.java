@@ -1,5 +1,3 @@
-
-
 import domain.*;
 import enums.Settings;
 import javafx.application.Application;

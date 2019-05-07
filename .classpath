@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/user/Downloads/batik-all-1.7.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/user/Downloads/amqp-client-4.1.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/user/Downloads/controlsfx-8.40.14.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/user/Downloads/fxsampler-1.0.10.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/user/Downloads/log4j-1.2.17.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/user/Downloads/slf4j-api-1.7.21.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/user/Downloads/slf4j-log4j12-1.7.21.jar"/>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="C:/home/batik-all-1.7.jar"/>
-	<classpathentry kind="lib" path="C:/home/controlsfx-8.40.14.jar"/>
-	<classpathentry kind="lib" path="C:/home/fxsampler-1.0.10.jar"/>
-	<classpathentry kind="lib" path="C:/home/amqp-client-4.1.0.jar"/>
-	<classpathentry kind="lib" path="C:/home/log4j-1.2.17.jar"/>
-	<classpathentry kind="lib" path="C:/home/slf4j-api-1.7.21.jar"/>
-	<classpathentry kind="lib" path="C:/home/slf4j-log4j12-1.7.21.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jre1.8.0_211"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

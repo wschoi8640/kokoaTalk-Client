@@ -40,6 +40,7 @@ public class LogoutService {
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
+		model.setCurStage("loginService");
 		model.getLoginService().getChildren().clear();
 		model.getLoginService().getChildren().addAll(model.getTitleLabel(), model.getLoginGrid());
 	}

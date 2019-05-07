@@ -35,6 +35,7 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import model.Model;
 import utils.AlertHandler;
+import utils.CompetitionHandler;
 
 /**
  * This class consists Login Panel and Connect to Server
@@ -45,7 +46,7 @@ import utils.AlertHandler;
 public class LoginService extends VBox {
 	public Stage parentStage;
 	private Model model;
-	private UserManager chatUserService;
+	private UserManager userManager;
 	private JoinService joinService;
 	private BufferedReader messageRcv;
 	private ObjectOutputStream messageListSender;
@@ -167,7 +168,8 @@ public class LoginService extends VBox {
 	 * @param loginEvent
 	 */
 	void loginHandler(ActionEvent event) {
-		
+		CompetitionHandler.handle(model.getCurStatus());	
+
 		// Check if ID, PW field is blank 
 		if (idField.getText().trim().isEmpty()) {
 			AlertHandler.alert(ErrMsgs.BlankIdField.getMsg());
@@ -191,6 +193,7 @@ public class LoginService extends VBox {
 				messageListSender.writeObject(messageList);
 				messageListSender.flush();
 				messageListSender.reset();
+				model.setCurStatus("waiting");
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -209,6 +212,7 @@ public class LoginService extends VBox {
 						e.printStackTrace();
 					}
 				}
+				model.setCurStatus("available");
 				responseMsg = messageList.get(0);
 				messageList.clear();
 				// Login Successful
@@ -221,9 +225,10 @@ public class LoginService extends VBox {
 					// Save this Grid for later
 					model.setLoginService(this);
 					// Change to ChatUser Grid 
-					chatUserService = new UserManager(model);
+					userManager = new UserManager(model);
+					model.setCurStage("userManager");
 					this.getChildren().clear();
-					this.getChildren().add(chatUserService);
+					this.getChildren().add(userManager);
 					return;
 				}
 
@@ -287,6 +292,7 @@ public class LoginService extends VBox {
 
 		// Change to Join Grid
 		joinService = new JoinService(model);
+		model.setCurStage("joinService");
 		this.getChildren().clear();
 		this.getChildren().add(joinService);
 	}

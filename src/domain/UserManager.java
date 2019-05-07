@@ -8,6 +8,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import enums.ErrMsgs;
 import enums.Settings;
@@ -29,6 +31,7 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import model.Model;
 import utils.AlertHandler;
+import utils.CompetitionHandler;
 
 /**
  * This class consists UserManage Panel and offers UserManage service
@@ -177,9 +180,29 @@ public class UserManager extends VBox {
 		this.setSpacing(btnHeight / 5);
 		this.getChildren().addAll(menuGrid, userNameLabel, refreshBtn, friendGrid, scrollPane, funcGrid, logoutBtn);
 		
-		refreshHandler(null);
+		autoRefresh();
 	}
 
+	private void autoRefresh() {
+        int sleepSec = 2 ;
+        final ScheduledThreadPoolExecutor exec = new ScheduledThreadPoolExecutor(1);
+        exec.scheduleAtFixedRate(new Runnable(){
+            
+            public void run(){
+                try {
+                	if(model.getCurStage().equals("userManager") && model.getCurStatus().equals("available")) {
+                		refreshHandler(null);
+                	}
+                } catch (Exception e) {
+                     
+                    e.printStackTrace();
+                    // 에러 발생시 Executor를 중지시킨다
+                    exec.shutdown() ;
+                }
+            }
+        }, 0, sleepSec, TimeUnit.SECONDS);
+	}
+	
 	/**
 	 * set Height of inner Children by Panel Height Change
 	 * 
@@ -221,6 +244,8 @@ public class UserManager extends VBox {
 	 * @param refreshAction
 	 */
 	void refreshHandler(ActionEvent e) {
+		CompetitionHandler.handle(model.getCurStatus());	
+
 		if (sock.isConnected()) {
 			// request when user has friend
 			if (friendsButtonList.size() > 0) {
@@ -234,11 +259,13 @@ public class UserManager extends VBox {
 					messageListSend.writeObject(messageList);
 					messageListSend.flush();
 					messageListSend.reset();
+					model.setCurStatus("waiting");
 					messageList = null;
 					// Wait for response
 					while(messageList == null) {
 						messageList = (ArrayList<String>) messageListRcv.readObject();
 					}
+					model.setCurStatus("available");
 				} catch (IOException e1) {
 					e1.printStackTrace();
 				} catch (ClassNotFoundException e1) {
@@ -304,6 +331,7 @@ public class UserManager extends VBox {
 			model.setChatRoomManager(chatRoomManager);
 			cnt = 1;
 		}
+		model.setCurStage("chatroomManager");
 		model.getLoginService().getChildren().clear();
 		model.getLoginService().getChildren().add(model.getChatRoomManager());
 	}
@@ -344,6 +372,8 @@ public class UserManager extends VBox {
 	 * @return List<Friends>
 	 */
 	private List<ToggleButton> rcvFriendsList() {
+		CompetitionHandler.handle(model.getCurStatus());	
+
 		try {
 			if (sock.isConnected()) {
 				List<ToggleButton> temp_list = new ArrayList<ToggleButton>();
@@ -359,6 +389,7 @@ public class UserManager extends VBox {
 				messageListSend.writeObject(messageList);
 				messageListSend.flush();
 				messageListSend.reset();
+				model.setCurStatus("waiting");
 
 				// rcv Server response
 				messageList = null;
@@ -366,6 +397,8 @@ public class UserManager extends VBox {
 				while(messageList == null) {
 					messageList = (ArrayList<String>) messageListRcv.readObject();
 				}
+				model.setCurStatus("available");
+
 				// make FriendBtnList from response
 				if (messageList.get(0).equals(MsgKeys.ReceiveSuccess.getKey())) {
 					for (int i = 1; i < messageList.size(); i++) {
@@ -397,6 +430,8 @@ public class UserManager extends VBox {
 	 * @param removeEvent
 	 */
 	void rmvFriendHandler(ActionEvent e) {
+		CompetitionHandler.handle(model.getCurStatus());	
+
 		// Remove when having any Friend
 		if (!friendsButtonList.isEmpty()) {
 			List<String> rmvFriendsList = new ArrayList<String>();
@@ -425,7 +460,9 @@ public class UserManager extends VBox {
 						messageListSend.flush();
 						messageListSend.reset();
 						messageList.clear();
+						model.setCurStatus("waiting");
 
+						
 						// Receive Server Response
 						messageRcv = model.getMessageRcv();
 						
@@ -438,6 +475,7 @@ public class UserManager extends VBox {
 								e1.printStackTrace();
 							}
 						}
+						model.setCurStatus("available");
 						message = messageList.get(0);
 
 						// Remove Successful
@@ -480,6 +518,8 @@ public class UserManager extends VBox {
 	 * @param addEvent
 	 */
 	void addFriendHandler(ActionEvent e) {
+		CompetitionHandler.handle(model.getCurStatus());	
+
 		// Read Friend ID
 		TextInputDialog dialog = new TextInputDialog("Insert Friend's ID");
 
@@ -518,6 +558,7 @@ public class UserManager extends VBox {
 						messageListSend.flush();
 						messageListSend.reset();
 						messageList.clear();
+						model.setCurStatus("waiting");
 
 						messageList = null;
 						// Wait for response
@@ -528,6 +569,7 @@ public class UserManager extends VBox {
 								e1.printStackTrace();
 							}
 						}
+						model.setCurStatus("available");
 						message = messageList.get(0);
 						messageList.clear();
 						// Add Friend Successful

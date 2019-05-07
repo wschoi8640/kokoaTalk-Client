@@ -36,6 +36,8 @@ public class Model {
 	private GridPane chatroomGrid;
 	private GridPane loginGrid;
 	private Label titleLabel;
+	private String curStage;
+	private String curStatus;
 
 	public ChattingRoom getChattingRoom() {
 		return chattingRoom;
@@ -211,6 +213,22 @@ public class Model {
 
 	public void setChatroomGrid(GridPane chatroomGrid) {
 		this.chatroomGrid = chatroomGrid;
+	}
+
+	public String getCurStage() {
+		return curStage;
+	}
+
+	public void setCurStage(String curStage) {
+		this.curStage = curStage;
+	}
+
+	public String getCurStatus() {
+		return curStatus;
+	}
+
+	public void setCurStatus(String curStatus) {
+		this.curStatus = curStatus;
 	}
 
 	private String connectedID;

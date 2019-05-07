@@ -11,7 +11,7 @@ public enum Settings {
 	Font("Consolas"),
 	ChattingServerPort(10002),
 	LoginServerPort(10001),
-	ServerIP("192.168.0.12"),
+	ServerIP("172.30.1.49"),
 	Title("KokoaTalk");
 	
 	String setting;
