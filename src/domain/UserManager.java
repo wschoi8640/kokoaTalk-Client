@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 import enums.ErrMsgs;
 import enums.Settings;
 import enums.MsgKeys;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -42,7 +43,6 @@ import utils.CompetitionHandler;
 public class UserManager extends VBox {
 	private Model model;
 	private LoginService loginService;
-	private Button refreshBtn;
 	private Button showUsrBtn;
 	private Button showChatBtn;
 	private Button addFriendBtn;
@@ -120,11 +120,6 @@ public class UserManager extends VBox {
 		showChatBtn.setPrefSize(btnWidth, btnHeight);
 		showChatBtn.setOnAction(e -> showChatHandler(e));
 
-		// btn for Update Connection Status
-		refreshBtn = new Button("Refresh Status");
-		refreshBtn.setPrefSize(2 * btnWidth, btnHeight);
-		refreshBtn.setOnAction(e -> refreshHandler(e));
-
 		// btn for Adding Friend
 		addFriendBtn = new Button("Add Friend");
 		addFriendBtn.setPrefSize(btnWidth, btnHeight);
@@ -178,7 +173,7 @@ public class UserManager extends VBox {
 		this.setAlignment(Pos.TOP_CENTER);
 		this.setFillWidth(true);
 		this.setSpacing(btnHeight / 5);
-		this.getChildren().addAll(menuGrid, userNameLabel, refreshBtn, friendGrid, scrollPane, funcGrid, logoutBtn);
+		this.getChildren().addAll(menuGrid, userNameLabel, friendGrid, scrollPane, funcGrid, logoutBtn);
 		
 		autoRefresh();
 	}
@@ -186,21 +181,19 @@ public class UserManager extends VBox {
 	private void autoRefresh() {
         int sleepSec = 2 ;
         final ScheduledThreadPoolExecutor exec = new ScheduledThreadPoolExecutor(1);
-        exec.scheduleAtFixedRate(new Runnable(){
-            
-            public void run(){
-                try {
-                	if(model.getCurStage().equals("userManager") && model.getCurStatus().equals("available")) {
-                		refreshHandler(null);
-                	}
-                } catch (Exception e) {
-                     
-                    e.printStackTrace();
-                    // 에러 발생시 Executor를 중지시킨다
-                    exec.shutdown() ;
-                }
+        Runnable loop = new Runnable() {
+            public void run() {
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                    	if(model.getCurStage().equals("userManager") && model.getCurStatus().equals("available")) {
+                    		refreshHandler(null);
+                    	}
+                    }
+                });
             }
-        }, 0, sleepSec, TimeUnit.SECONDS);
+        };
+        exec.scheduleAtFixedRate(loop, 0, sleepSec, TimeUnit.SECONDS);
 	}
 	
 	/**
@@ -230,7 +223,6 @@ public class UserManager extends VBox {
 		addFriendBtn.setPrefWidth(newPanelWidth.doubleValue() / 2);
 		rmvFriendBtn.setPrefWidth(newPanelWidth.doubleValue() / 2);
 		logoutBtn.setPrefWidth(newPanelWidth.doubleValue());
-		refreshBtn.setPrefWidth(newPanelWidth.doubleValue());
 	}
 
 	

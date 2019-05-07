@@ -93,12 +93,14 @@ Messanger app using JavaFX and Socket (Client Side)
 
 <img src="./images/chatroomManagePanelFeature3.gif">
 
+# recent Updated
+
+Friend Status real time Update
+
 # soon Updated 
 
 Chatroom showing last message
 
 Chatroom real time Alarm (Auto Created to Other Members at First Msg)
-
-Friend Status real time Update
 
 sending Various Files Through message

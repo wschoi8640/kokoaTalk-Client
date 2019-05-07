@@ -71,6 +71,7 @@ public class LoginService extends VBox {
 		initLoginGrid();
 		connectToServer();
 		model.setLoginService(this);
+		model.setCurStatus("available");
 	}
 
 	
